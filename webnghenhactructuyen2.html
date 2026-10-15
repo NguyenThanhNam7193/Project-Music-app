@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonia - Thế giới âm nhạc của bạn</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col select-none overflow-hidden">
+
+    <!-- AUTH MODAL (Đăng nhập / Đăng ký) -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md hidden">
+        <div class="glass-panel w-full max-w-md p-8 rounded-3xl shadow-2xl relative border border-slate-700/50">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 font-bold text-2xl shadow-lg shadow-emerald-500/30 mb-3">
+                    <i class="fa-solid fa-music"></i>
+                </div>
+                <h2 id="authTitle" class="text-2xl font-bold text-white tracking-wide">Đăng nhập vào Harmonia</h2>
+                <p class="text-slate-400 text-sm mt-1">Không gian âm nhạc thư giãn dành riêng cho bạn</p>
+            </div>
+
+            <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
+                <div id="nameField" class="hidden">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Họ và tên</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="fullName" placeholder="Nhập họ tên của bạn" class="w-full bg-slate-900/60 border border-slate-700/80 rounded-xl px-4 py-3 pl-11 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Email</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" id="email" required placeholder="name@example.com" class="w-full bg-slate-900/60 border border-slate-700/80 rounded-xl px-4 py-3 pl-11 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="password" required placeholder="••••••••" class="w-full bg-slate-900/60 border border-slate-700/80 rounded-xl px-4 py-3 pl-11 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                </div>
+                <button type="submit" id="authSubmitBtn" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition transform active:scale-[0.98]">
+                    Đăng nhập
+                </button>
+            </form>
+
+            <div class="text-center mt-6">
+                <p id="authToggleText" class="text-sm text-slate-400">
+                    Chưa có tài khoản? <button onclick="toggleAuthMode()" class="text-emerald-400 hover:underline font-semibold">Đăng ký ngay</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div class="flex flex-1 h-[calc(100vh-90px)] overflow-hidden">
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-slate-950/60 border-r border-slate-800/60 flex flex-col p-5 space-y-6">
+            <div class="flex items-center space-x-3 px-2">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-bold text-lg shadow-md shadow-emerald-500/30">
+                    <i class="fa-solid fa-wave-square"></i>
+                </div>
+                <span class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent">Harmonia</span>
+            </div>
+
+            <nav class="space-y-1.5 flex-1">
+                <a href="#" onclick="switchTab('home')" id="nav-home" class="flex items-center space-x-3.5 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 hover:text-white transition font-medium text-sm bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <i class="fa-solid fa-house text-lg w-5"></i><span>Khám phá</span>
+                </a>
+                <a href="#" onclick="switchTab('library')" id="nav-library" class="flex items-center space-x-3.5 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-white transition font-medium text-sm">
+                    <i class="fa-solid fa-heart text-lg w-5"></i><span>Bài hát yêu thích</span>
+                </a>
+                <a href="#" onclick="switchTab('playlists')" id="nav-playlists" class="flex items-center space-x-3.5 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-white transition font-medium text-sm">
+                    <i class="fa-solid fa-list-music text-lg w-5"></i><span>Playlist của tôi</span>
+                </a>
+            </nav>
+
+            <!-- User Status Card in Sidebar -->
+            <div id="userCard" class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <div id="userAvatar" class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0">
+                        K
+                    </div>
+                    <div class="truncate">
+                        <h4 id="userNameDisplay" class="text-sm font-bold text-white truncate">Khách</h4>
+                        <p class="text-xs text-slate-400">Tài khoản miễn phí</p>
+                    </div>
+                </div>
+                <button id="authActionButton" onclick="openAuthModal('login')" class="text-xs px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg transition shrink-0">
+                    Vào
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 overflow-y-auto bg-gradient-to-b from-[#0f172a]/80 to-[#0b0f19] p-8">
+            <!-- TOP BAR SEARCH & HEADER -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="relative w-96">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Tìm kiếm bài hát, nghệ sĩ..." class="w-full bg-slate-900/60 border border-slate-800 rounded-2xl py-3 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition shadow-inner">
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="alert('Harmonia phiên bản Pro - Âm thanh chất lượng cao Lossless')" class="px-4 py-2 bg-slate-800/60 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold transition flex items-center space-x-2">
+                        <i class="fa-solid fa-crown text-amber-400"></i><span>Nâng cấp VIP</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW: HOME / DISCOVER -->
+            <div id="view-home" class="space-y-8">
+                <!-- HERO BANNER -->
+                <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-emerald-900/40 via-teal-900/20 to-slate-900/40 border border-emerald-500/20 p-8 flex items-center justify-between shadow-2xl">
+                    <div class="max-w-xl z-10">
+                        <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-500/30">Giai điệu thư giãn</span>
+                        <h1 class="text-4xl font-extrabold text-white mt-3 mb-2 leading-tight">Thưởng thức âm nhạc không giới hạn</h1>
+                        <p class="text-slate-300 text-sm mb-6">Trải nghiệm âm thanh đỉnh cao với giao diện dịu mắt, lưu lại bài hát yêu thích và tạo playlist cá nhân ngay hôm nay.</p>
+                        <button onclick="playSong(0)" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/30 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-play"></i><span>Nghe ngay bài hát nổi bật</span>
+                        </button>
+                    </div>
+                    <div class="hidden lg:block w-72 h-44 rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">
+                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80" alt="Music Banner" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-4">
+                            <span class="text-xs font-bold text-white"><i class="fa-solid fa-headphones text-emerald-400 mr-1.5"></i> Lofi Chill Station</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SONG LIST SECTION -->
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-compact-disc text-emerald-400 animate-spin" style="animation-duration: 8s;"></i>
+                            <span>Danh sách bài hát thịnh hành</span>
+                        </h3>
+                        <span class="text-xs text-slate-400">Cập nhật hôm nay</span>
+                    </div>
+                    <div id="songListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: LIKED SONGS -->
+            <div id="view-library" class="space-y-6 hidden">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Bài hát yêu thích của bạn</h2>
+                        <p class="text-sm text-slate-400 mt-1">Lưu trữ các giai điệu bạn đã thả tim</p>
+                    </div>
+                </div>
+                <div id="likedSongsContainer" class="space-y-3">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- VIEW: PLAYLISTS -->
+            <div id="view-playlists" class="space-y-6 hidden">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Playlist cá nhân</h2>
+                        <p class="text-sm text-slate-400 mt-1">Tự tạo và quản lý bộ sưu tập nhạc của riêng bạn</p>
+                    </div>
+                    <button onclick="createNewPlaylist()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
+                        <i class="fa-solid fa-plus"></i><span>Tạo Playlist mới</span>
+                    </button>
+                </div>
+                <div id="playlistsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- BOTTOM MUSIC PLAYER BAR -->
+    <footer class="h-[90px] bg-slate-950 border-t border-slate-800/80 px-6 flex items-center justify-between z-40 relative">
+        <!-- Current Playing Info -->
+        <div class="flex items-center space-x-4 w-1/4">
+            <img id="playerCover" src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=150&q=80" alt="Cover" class="w-14 h-14 rounded-xl object-cover shadow-md border border-slate-800">
+            <div class="truncate">
+                <h4 id="playerTitle" class="text-sm font-bold text-white truncate">Chọn bài hát để phát</h4>
+                <p id="playerArtist" class="text-xs text-slate-400 truncate">Harmonia Player</p>
+            </div>
+            <button onclick="toggleLikeCurrentSong()" id="playerLikeBtn" class="text-slate-400 hover:text-rose-500 transition text-lg ml-2">
+                <i class="fa-regular fa-heart"></i>
+            </button>
+        </div>
+
+        <!-- Player Controls & Timeline -->
+        <div class="flex flex-col items-center space-y-2 w-2/4 max-w-xl">
+            <div class="flex items-center space-x-6">
+                <button onclick="toggleShuffle()" id="shuffleBtn" class="text-slate-400 hover:text-white transition text-sm"><i class="fa-solid fa-shuffle"></i></button>
+                <button onclick="prevSong()" class="text-slate-300 hover:text-white transition text-base"><i class="fa-solid fa-backward-step"></i></button>
+                <button onclick="togglePlay()" id="playPauseBtn" class="w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center text-base shadow-lg shadow-emerald-500/30 transition transform active:scale-95">
+                    <i class="fa-solid fa-play ml-0.5" id="playIcon"></i>
+                </button>
+                <button onclick="nextSong()" class="text-slate-300 hover:text-white transition text-base"><i class="fa-solid fa-forward-step"></i></button>
+                <button onclick="toggleRepeat()" id="repeatBtn" class="text-slate-400 hover:text-white transition text-sm"><i class="fa-solid fa-repeat"></i></button>
+            </div>
+            <div class="flex items-center space-x-3 w-full text-xs text-slate-400">
+                <span id="currentTime">0:00</span>
+                <input type="range" id="progressBar" value="0" min="0" max="100" oninput="seekSong(this.value)" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                <span id="durationTime">0:00</span>
+            </div>
+        </div>
+
+        <!-- Volume & Extras -->
+        <div class="flex items-center justify-end space-x-3 w-1/4">
+            <i class="fa-solid fa-volume-high text-slate-400 text-sm"></i>
+            <input type="range" value="80" min="0" max="100" oninput="setVolume(this.value)" class="w-24 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Mock Database of Songs (with free streaming audio samples)
+        const songs = [
+            {
+                id: 1,
+                title: "Lofi Study Rain",
+                artist: "Chillhop Music",
+                album: "Coffee & Rain Vol. 1",
+                duration: "3:45",
+                durationSec: 225,
+                cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80",
+                audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+            },
+            {
+                id: 2,
+                title: "Midnight City Lights",
+                artist: "Synthwave Boy",
+                album: "Neon Dreams",
+                duration: "4:12",
+                durationSec: 252,
+                cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=300&q=80",
+                audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+            },
+            {
+                id: 3,
+                title: "Acoustic Morning",
+                artist: "Sunbeam Trio",
+                album: "Sunrise Sessions",
+                duration: "2:58",
+                durationSec: 178,
+                cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=300&q=80",
+                audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+            },
+            {
+                id: 4,
+                title: "Electric Pulse",
+                artist: "Cyber DJ",
+                album: "Underground Club",
+                duration: "3:30",
+                durationSec: 210,
+                cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80",
+                audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+            },
+            {
+                id: 5,
+                title: "Journey to the Stars",
+                artist: "Ambient Space",
+                album: "Cosmos",
+                duration: "5:05",
+                durationSec: 305,
+                cover: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=300&q=80",
+                audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
+            }
+        ];
+
+        // State Management
+        let currentUser = JSON.parse(localStorage.getItem('harmonia_current_user')) || null;
+        let likedSongIds = JSON.parse(localStorage.getItem('harmonia_liked_' + (currentUser ? currentUser.email : 'guest'))) || [];
+        let userPlaylists = JSON.parse(localStorage.getItem('harmonia_playlists_' + (currentUser ? currentUser.email : 'guest'))) || [
+            { id: 1, name: "Nhạc Thư Giãn Buổi Tối", songs: [1, 3] }
+        ];
+
+        let currentSongIndex = 0;
+        let isPlaying = false;
+        let isShuffle = false;
+        let isRepeat = false;
+        const audioElement = new Audio();
+
+        // Initialize App
+        window.onload = function() {
+            updateUserUI();
+            renderSongs(songs);
+            renderLikedSongs();
+            renderPlaylists();
+        };
+
+        // --- AUTHENTICATION & LOCAL STORAGE ---
+        let isRegisterMode = false;
+
+        function openAuthModal(mode) {
+            isRegisterMode = (mode === 'register');
+            const modal = document.getElementById('authModal');
+            const title = document.getElementById('authTitle');
+            const nameField = document.getElementById('nameField');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const toggleText = document.getElementById('authToggleText');
+
+            modal.classList.remove('hidden');
+            if (isRegisterMode) {
+                title.innerText = "Đăng ký tài khoản Harmonia";
+                nameField.classList.remove('hidden');
+                submitBtn.innerText = "Tạo tài khoản";
+                toggleText.innerHTML = `Đã có tài khoản? <button onclick="openAuthModal('login')" class="text-emerald-400 hover:underline font-semibold">Đăng nhập</button>`;
+            } else {
+                title.innerText = "Đăng nhập vào Harmonia";
+                nameField.classList.add('hidden');
+                submitBtn.innerText = "Đăng nhập";
+                toggleText.innerHTML = `Chưa có tài khoản? <button onclick="openAuthModal('register')" class="text-emerald-400 hover:underline font-semibold">Đăng ký ngay</button>`;
+            }
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function toggleAuthMode() {
+            openAuthModal(isRegisterMode ? 'login' : 'register');
+        }
+
+        function handleAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value;
+
+            let users = JSON.parse(localStorage.getItem('harmonia_users')) || [];
+
+            if (isRegisterMode) {
+                const existing = users.find(u => u.email === email);
+                if (existing) {
+                    alert('Email này đã được đăng ký!');
+                    return;
+                }
+                const newUser = { email, password, fullName };
+                users.push(newUser);
+                localStorage.setItem('harmonia_users', JSON.stringify(users));
+                currentUser = newUser;
+                alert('Đăng ký thành công!');
+            } else {
+                const user = users.find(u => u.email === email && u.password === password);
+                if (!user) {
+                    alert('Email hoặc mật khẩu không chính xác!');
+                    return;
+                }
+                currentUser = user;
+                alert('Đăng nhập thành công!');
+            }
+
+            localStorage.setItem('harmonia_current_user', JSON.stringify(currentUser));
+            // Load user data
+            likedSongIds = JSON.parse(localStorage.getItem('harmonia_liked_' + currentUser.email)) || [];
+            userPlaylists = JSON.parse(localStorage.getItem('harmonia_playlists_' + currentUser.email)) || [{ id: 1, name: "Yêu thích của tôi", songs: [] }];
+
+            closeAuthModal();
+            updateUserUI();
+            renderSongs(songs);
+            renderLikedSongs();
+            renderPlaylists();
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('harmonia_current_user');
+            likedSongIds = [];
+            userPlaylists = [];
+            updateUserUI();
+            renderSongs(songs);
+            renderLikedSongs();
+            renderPlaylists();
+            alert('Đã đăng xuất tài khoản.');
+        }
+
+        function updateUserUI() {
+            const userCard = document.getElementById('userCard');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userAvatar = document.getElementById('userAvatar');
+            const authActionButton = document.getElementById('authActionButton');
+
+            if (currentUser) {
+                userNameDisplay.innerText = currentUser.fullName || currentUser.email.split('@')[0];
+                userAvatar.innerText = (currentUser.fullName || currentUser.email)[0].toUpperCase();
+                userCard.querySelector('p').innerText = "Thành viên VIP";
+                authActionButton.innerText = "Đăng xuất";
+                authActionButton.setAttribute('onclick', 'logout()');
+                authActionButton.className = "text-xs px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-bold rounded-lg transition shrink-0";
+            } else {
+                userNameDisplay.innerText = "Khách";
+                userAvatar.innerText = "K";
+                userCard.querySelector('p').innerText = "Tài khoản miễn phí";
+                authActionButton.innerText = "Vào";
+                authActionButton.setAttribute('onclick', "openAuthModal('login')");
+                authActionButton.className = "text-xs px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg transition shrink-0";
+            }
+        }
+
+        // --- NAVIGATION & UI TABS ---
+        function switchTab(tabId) {
+            ['home', 'library', 'playlists'].forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                document.getElementById('nav-' + t).className = "flex items-center space-x-3.5 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-white transition font-medium text-sm";
+            });
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+            document.getElementById('nav-' + tabId).className = "flex items-center space-x-3.5 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 hover:text-white transition font-medium text-sm bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderSongs(songArray) {
+            const container = document.getElementById('songListContainer');
+            container.innerHTML = songArray.map((song, index) => {
+                const isLiked = likedSongIds.includes(song.id);
+                return `
+                    <div class="glass-panel p-3.5 rounded-2xl flex items-center justify-between group hover:border-emerald-500/40 transition">
+                        <div class="flex items-center space-x-3.5 cursor-pointer flex-1 min-w-0" onclick="playSong(${songs.findIndex(s => s.id === song.id)})">
+                            <div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0">
+                                <img src="${song.cover}" alt="${song.title}" class="w-full h-full object-cover group-hover:scale-105 transition">
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                    <i class="fa-solid fa-play text-white text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="truncate">
+                                <h4 class="text-sm font-bold text-white truncate group-hover:text-emerald-400 transition">${song.title}</h4>
+                                <p class="text-xs text-slate-400 truncate">${song.artist}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 shrink-0 ml-2">
+                            <span class="text-xs text-slate-500">${song.duration}</span>
+                            <button onclick="toggleLikeSong(${song.id})" class="text-slate-400 hover:text-rose-500 transition text-sm">
+                                <i class="${isLiked ? 'fa-solid fa-heart text-rose-500' : 'fa-regular fa-heart'}"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderLikedSongs() {
+            const container = document.getElementById('likedSongsContainer');
+            const likedSongs = songs.filter(s => likedSongIds.includes(s.id));
+            if (likedSongs.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-500 italic py-4">Chưa có bài hát yêu thích nào. Hãy bấm biểu tượng trái tim để thêm nhé!</p>`;
+                return;
+            }
+            container.innerHTML = likedSongs.map(song => `
+                <div class="glass-panel p-3.5 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center space-x-4 cursor-pointer flex-1" onclick="playSong(${songs.findIndex(s => s.id === song.id)})">
+                        <img src="${song.cover}" class="w-12 h-12 rounded-xl object-cover">
+                        <div>
+                            <h4 class="text-sm font-bold text-white">${song.title}</h4>
+                            <p class="text-xs text-slate-400">${song.artist} • ${song.album}</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleLikeSong(${song.id})" class="text-rose-500 hover:text-slate-400 text-base">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderPlaylists() {
+            const container = document.getElementById('playlistsContainer');
+            container.innerHTML = userPlaylists.map(pl => `
+                <div class="glass-panel p-5 rounded-2xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-music"></i>
+                        </div>
+                        <span class="text-xs text-slate-400">${pl.songs.length} bài hát</span>
+                    </div>
+                    <h4 class="text-base font-bold text-white">${pl.name}</h4>
+                    <p class="text-xs text-slate-400">Playlist cá nhân tạo bởi bạn</p>
+                </div>
+            `).join('');
+        }
+
+        // --- MUSIC PLAYER ENGINE ---
+        function playSong(index) {
+            currentSongIndex = index;
+            const song = songs[currentSongIndex];
+            
+            document.getElementById('playerCover').src = song.cover;
+            document.getElementById('playerTitle').innerText = song.title;
+            document.getElementById('playerArtist').innerText = song.artist;
+            document.getElementById('durationTime').innerText = song.duration;
+            
+            // Update like button in player
+            const playerLikeBtn = document.getElementById('playerLikeBtn');
+            playerLikeBtn.innerHTML = `<i class="${likedSongIds.includes(song.id) ? 'fa-solid fa-heart text-rose-500' : 'fa-regular fa-heart'}"></i>`;
+
+            audioElement.src = song.audioUrl;
+            audioElement.play();
+            isPlaying = true;
+            updatePlayButtonUI();
+        }
+
+        function togglePlay() {
+            if (!audioElement.src) {
+                playSong(0);
+                return;
+            }
+            if (isPlaying) {
+                audioElement.pause();
+                isPlaying = false;
+            } else {
+                audioElement.play();
+                isPlaying = true;
+            }
+            updatePlayButtonUI();
+        }
+
+        function updatePlayButtonUI() {
+            const icon = document.getElementById('playIcon');
+            if (isPlaying) {
+                icon.className = "fa-solid fa-pause";
+            } else {
+                icon.className = "fa-solid fa-play ml-0.5";
+            }
+        }
+
+        audioElement.ontimeupdate = function() {
+            if (audioElement.duration) {
+                const progress = (audioElement.currentTime / audioElement.duration) * 100;
+                document.getElementById('progressBar').value = progress;
+                
+                let mins = Math.floor(audioElement.currentTime / 60);
+                let secs = Math.floor(audioElement.currentTime % 60);
+                if (secs < 10) secs = '0' + secs;
+                document.getElementById('currentTime').innerText = `${mins}:${secs}`;
+            }
+        };
+
+        audioElement.onended = function() {
+            if (isRepeat) {
+                audioElement.play();
+            } else {
+                nextSong();
+            }
+        };
+
+        function seekSong(val) {
+            if (audioElement.duration) {
+                audioElement.currentTime = (val / 100) * audioElement.duration;
+            }
+        }
+
+        function setVolume(val) {
+            audioElement.volume = val / 100;
+        }
+
+        function nextSong() {
+            if (isShuffle) {
+                currentSongIndex = Math.floor(Math.random() * songs.length);
+            } else {
+                currentSongIndex = (currentSongIndex + 1) % songs.length;
+            }
+            playSong(currentSongIndex);
+        }
+
+        function prevSong() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            playSong(currentSongIndex);
+        }
+
+        function toggleShuffle() {
+            isShuffle = !isShuffle;
+            document.getElementById('shuffleBtn').classList.toggle('text-emerald-400', isShuffle);
+        }
+
+        function toggleRepeat() {
+            isRepeat = !isRepeat;
+            document.getElementById('repeatBtn').classList.toggle('text-emerald-400', isRepeat);
+        }
+
+        // --- INTERACTION FEATURES ---
+        function toggleLikeSong(songId) {
+            const index = likedSongIds.indexOf(songId);
+            if (index > -1) {
+                likedSongIds.splice(index, 1);
+            } else {
+                likedSongIds.push(songId);
+            }
+
+            if (currentUser) {
+                localStorage.setItem('harmonia_liked_' + currentUser.email, JSON.stringify(likedSongIds));
+            } else {
+                localStorage.setItem('harmonia_liked_guest', JSON.stringify(likedSongIds));
+            }
+
+            renderSongs(songs);
+            renderLikedSongs();
+            
+            // Update player like button if current song matches
+            const currentSong = songs[currentSongIndex];
+            if (currentSong && currentSong.id === songId) {
+                const playerLikeBtn = document.getElementById('playerLikeBtn');
+                playerLikeBtn.innerHTML = `<i class="${likedSongIds.includes(songId) ? 'fa-solid fa-heart text-rose-500' : 'fa-regular fa-heart'}"></i>`;
+            }
+        }
+
+        function toggleLikeCurrentSong() {
+            const currentSong = songs[currentSongIndex];
+            if (currentSong) {
+                toggleLikeSong(currentSong.id);
+            }
+        }
+
+        function handleSearch(query) {
+            const filtered = songs.filter(s => s.title.toLowerCase().includes(query.toLowerCase()) || s.artist.toLowerCase().includes(query.toLowerCase()));
+            renderSongs(filtered);
+        }
+
+        function createNewPlaylist() {
+            const name = prompt("Nhập tên playlist mới của bạn:");
+            if (name && name.trim() !== "") {
+                userPlaylists.push({ id: Date.now(), name: name.trim(), songs: [] });
+                if (currentUser) {
+                    localStorage.setItem('harmonia_playlists_' + currentUser.email, JSON.stringify(userPlaylists));
+                }
+                renderPlaylists();
+                alert('Đã tạo playlist thành công!');
+            }
+        }
+    </script>
+</body>
+</html>
