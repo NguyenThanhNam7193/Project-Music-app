@@ -24,19 +24,131 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Mảng dữ liệu 100 bài hát (10 ca sĩ x 10 bài mỗi ca sĩ)
     let musicData = [
-        { id: 1, title: "Tìm Em (feat. Bảo Anh)", artist: "Hngle, Bảo Anh", desc: "Hngle, Bảo Anh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
-        { id: 2, title: "SSD", artist: "W/N, 267, PAR SG", desc: "W/N, 267, PAR SG", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
-        { id: 3, title: "Tội Cho Em", artist: "Cody Nam Võ", desc: "Cody Nam Võ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
-        { id: 4, title: "GIẢI CỨU THẾ GIỚI", artist: "TINH HÀ SAY HI", desc: "TINH HÀ SAY HI", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
-        { id: 5, title: "Không Buông", artist: "Hngle, Ari", desc: "Hngle, Ari", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
-        { id: 6, title: "Ngày Này Năm Ấy", artist: "Việt Anh", desc: "Việt Anh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
-        { id: 7, title: "Người Đầu Tiên", artist: "Juky San", desc: "Juky San", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
-        { id: 8, title: "Bông Hoa Đẹp Nhất", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" }
+        // 1. Sơn Tùng M-TP (ID 1 - 10)
+        { id: 1, title: "Chúng Ta Của Hiện Tại", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 2, title: "Lạc Trôi", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 3, title: "Nơi Này Có Anh", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 4, title: "Hãy Trao Cho Anh", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 5, title: "Muộn Rồi Mà Sao Còn", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 6, title: "Chạy Ngay Đi", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 7, title: "Âm Thầm Bên Em", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 8, title: "Em Của Ngày Hôm Qua", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 9, title: "Buông Đôi Tay Nhau Ra", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 10, title: "Chúng Ta Không Thuộc Về Nhau", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+
+        // 2. Bùi Trường Linh (ID 11 - 20)
+        { id: 11, title: "Yêu Người Có Ước Mơ", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 12, title: "Đường Tôi Chở Em Về", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 13, title: "Sớm Như Vậy", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 14, title: "Từng Ngày Như Mãi Mãi", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 15, title: "Từng Ngày Yêu Em", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 16, title: "Dù Cho Mai Về Sau", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 17, title: "Giờ Thì", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 18, title: "Vấn Vương", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 19, title: "Dù Em Từng Yêu", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 20, title: "Thịnh Vượng Việt Nam Sáng Ngời", artist: "buitruonglinh", desc: "buitruonglinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+
+        // 3. Quân A.P (ID 21 - 30)
+        { id: 21, title: "Bông Hoa Đẹp Nhất", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 22, title: "Ai Là Người Thương Em", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 23, title: "Có Ai Hẹn Hò Cùng Em Chưa", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 24, title: "Đáp Án Cuối Cùng", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 25, title: "Còn Gì Đau Hơn Chữ Đã Từng", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 26, title: "Phản Bội Chính Mình", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 27, title: "Lời Xin Lỗi Vụng Về", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 28, title: "Đầu Anh Toàn Là Em", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 29, title: "Lửa Gần Rơm", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 30, title: "Mùi Tổ Ấm", artist: "Quân A.P", desc: "Quân A.P", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+
+        // 4. Hngle (ID 31 - 40)
+        { id: 31, title: "Tìm Em (feat. Bảo Anh)", artist: "Hngle", desc: "Hngle, Bảo Anh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 32, title: "Không Buông", artist: "Hngle", desc: "Hngle, Ari", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 33, title: "Lạc Lối Giữa Đời", artist: "Hngle", desc: "Hngle", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 34, title: "Phía Sau Một Niệm Ký", artist: "Hngle", desc: "Hngle", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 35, title: "Tình Nhạt Phai", artist: "Hngle", desc: "Hngle", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 36, title: "Đêm Mưa Vắng Em", artist: "Hngle", desc: "Hngle", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 37, title: "Gió Vẫn Hát", artist: "Hngle", desc: "Hngle", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 38, title: "Chờ Mong", artist: "Hngle", desc: "Hngle", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 39, title: "Nắng Sân Trường", artist: "Hngle", desc: "Hngle", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 40, title: "Về Bên Anh", artist: "Hngle", desc: "Hngle", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+
+        // 5. W/N (ID 41 - 50)
+        { id: 41, title: "SSD", artist: "W/N", desc: "W/N, 267, PAR SG", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 42, title: "3út", artist: "W/N", desc: "W/N", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 43, title: "Simple Love", artist: "W/N", desc: "W/N", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 44, title: "Cất Em Vào Tâm Trí", artist: "W/N", desc: "W/N", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 45, title: "Mây", artist: "W/N", desc: "W/N", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 46, title: "Kẻ Mộng Mơ", artist: "W/N", desc: "W/N", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 47, title: "3107", artist: "W/N", desc: "W/N, 267", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 48, title: "3107-2", artist: "W/N", desc: "W/N, 267, Nâu", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 49, title: "3107-3", artist: "W/N", desc: "W/N, Nâu, Duong", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 50, title: "3107-4", artist: "W/N", desc: "W/N, Nâu, Erik", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+
+        // 6. Thanh Hưng (ID 51 - 60)
+        { id: 51, title: "Tệ Thật, Anh Nhớ Em", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 52, title: "Sai Người Sai Thời Điểm", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 53, title: "Đúng Người Sai Thời Điểm", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 54, title: "Em Đã Xa Anh", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 55, title: "Thay Lòng", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 56, title: "Nỗi Đau Lại Bắt Đầu", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 57, title: "Chỉ Còn Lại Nỗi Đau", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 58, title: "Yêu Em Dài Lâu", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 59, title: "Hạnh Phúc Đó Không Phải Anh", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 60, title: "Tìm Về Khúc Ca Xưa", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+
+        // 7. Hoàng Dũng (ID 61 - 70)
+        { id: 61, title: "Nàng Thơ", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 62, title: "Phonecert", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 63, title: "Đoạn Kết Mới", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 64, title: "Yếu Đuối", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 65, title: "Ném Câu Yêu Vào Không Trung", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 66, title: "Đôi Mươi", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 67, title: "Chẳng Nói Nên Lời", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 68, title: "Mùa Yêu Đầu", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 69, title: "Về Nhà", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 70, title: "Lý Giải", artist: "Hoàng Dũng", desc: "Hoàng Dũng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+
+        // 8. Vũ (ID 71 - 80)
+        { id: 71, title: "Lạ Lùng", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 72, title: "Đông Kiếm Em", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 73, title: "Bước Qua Nhau", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 74, title: "Phút Mộc", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 75, title: "Cành Hoa Trên Ghế Đá", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 76, title: "Những Lời Hứa Bỏ Quên", artist: "Vũ", desc: "Vũ, Dear Jane", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 77, title: "Chuyện Những Người Bạn", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 78, title: "Hành Trúc Xanh", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 79, title: "Chờ Người", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 80, title: "Bình Minh", artist: "Vũ", desc: "Vũ", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+
+        // 9. Đen Vâu (ID 81 - 90)
+        { id: 81, title: "Mang Tiền Về Cho Mẹ", artist: "Đen Vâu", desc: "Đen Vâu, Nguyên Thảo", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 82, title: "Nấu Ăn Cho Em", artist: "Đen Vâu", desc: "Đen Vâu, PiaLinh", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 83, title: "Trốn Tìm", artist: "Đen Vâu", desc: "Đen Vâu, MTV band", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 84, title: "Bài Này Chill Phết", artist: "Đen Vâu", desc: "Đen Vâu, Min", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 85, title: "Luôn Yêu Đời", artist: "Đen Vâu", desc: "Đen Vâu, Cheng", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 86, title: "Hai Triệu Năm", artist: "Đen Vâu", desc: "Đen Vâu, Biên", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 87, title: "Lối Nhỏ", artist: "Đen Vâu", desc: "Đen Vâu, Phương Anh Đào", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 88, title: "Mười Năm", artist: "Đen Vâu", desc: "Đen Vâu, Ngọc Atra", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 89, title: "Điểm Giao Khác", artist: "Đen Vâu", desc: "Đen Vâu", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 90, title: "Ghé Qua", artist: "Đen Vâu", desc: "Đen Vâu, Táo", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+
+        // 10. Jack97 (ID 91 - 100)
+        { id: 91, title: "Sóng Gió", artist: "Jack97", desc: "K-ICM, Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 92, title: "Hồng顏", artist: "Jack97", desc: "Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" },
+        { id: 93, title: "Bạc Phận", artist: "Jack97", desc: "K-ICM, Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300" },
+        { id: 94, title: "Là 1 Thằng Con Trai", artist: "Jack97", desc: "Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300" },
+        { id: 95, title: "Hoa Hải Đường", artist: "Jack97", desc: "Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300" },
+        { id: 96, title: "Đom Đóm", artist: "Jack97", desc: "Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=300" },
+        { id: 97, title: "LayLaLay", artist: "Jack97", desc: "Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" },
+        { id: 98, title: "Em Gì Ơi", artist: "Jack97", desc: "K-ICM, Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300" },
+        { id: 99, title: "Việt Nam Tôi", artist: "Jack97", desc: "Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300" },
+        { id: 100, title: "Từ Nơi Tôi Sinh Ra", artist: "Jack97", desc: "Jack", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300" }
     ];
 
     let playlists = [
-        { name: "Bài hát đã thích", songs: [1, 2, 3] }
+        { name: "Bài hát đã thích", songs: [1, 11, 21, 31, 41] }
     ];
 
     let currentSongIndex = 0;
@@ -69,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
             sectionTitle.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <span>Playlist: ${plName}</span>
-                    <button id="add-song-to-pl-btn" style="padding: 8px 16px; background: #7494ec; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 4px 10px rgba(116,148,236,0.3); transition: 0.2s;"><i class='bx bx-plus'></i> Thêm bài hát</button>
+                    <button id="add-song-to-pl-btn" style="padding: 8px 16px; background: #7494ec; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 4px 10px rgba(116,148,236,0.3);"><i class='bx bx-plus'></i> Thêm bài hát</button>
                 </div>
             `;
         } else {
@@ -112,11 +224,11 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             card.querySelector(".card-img").addEventListener("click", () => {
-                currentSongIndex = index;
+                currentSongIndex = musicData.findIndex(s => s.id === item.id);
                 playSong(item);
             });
             card.querySelector(".card-title").addEventListener("click", () => {
-                currentSongIndex = index;
+                currentSongIndex = musicData.findIndex(s => s.id === item.id);
                 playSong(item);
             });
 
@@ -144,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 modalSongList.innerHTML = "";
 
                 if (availableSongs.length === 0) {
-                    modalSongList.innerHTML = `<p style="color: #777; text-align: center; padding: 20px;">Tất cả bài hát đã có trong playlist này rồi!</p>`;
+                    modalSongList.innerHTML = `<p style="color: #777; text-align: center; padding: 20px;">Tất cả 100 bài hát đã có trong playlist này rồi!</p>`;
                 } else {
                     availableSongs.forEach(s => {
                         const songItem = document.createElement("div");
@@ -236,6 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!playlistUl) return;
 
         playlistUl.innerHTML = `
+            <li><a href="#"><i class='bx bxs-plus-square'></i> Tạo playlist</a></li>
             <li><a href="#" data-playlist="Bài hát đã thích"><i class='bx bxs-heart-square'></i> Bài hát đã thích</a></li>
         `;
 
@@ -257,22 +370,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function attachSidebarEvents() {
-        const homeLink = document.querySelector(".nav-links li a");
-        if (homeLink) {
-            homeLink.addEventListener("click", (e) => {
+        const menuLinks = document.querySelectorAll(".nav-links li a");
+        menuLinks.forEach(link => {
+            link.addEventListener("click", (e) => {
                 e.preventDefault();
-                renderCards(musicData, "Bài hát nổi bật", false);
+                menuLinks.forEach(l => l.classList.remove("active"));
+                link.classList.add("active");
+
+                const linkText = link.textContent.trim();
+                if (linkText.includes("Trang chủ")) {
+                    renderCards(musicData, "Bài hát nổi bật", false);
+                } else if (linkText.includes("Tìm kiếm")) {
+                    const searchInput = document.querySelector(".search-bar input");
+                    if (searchInput) searchInput.focus();
+                    renderCards(musicData, "Tìm kiếm bài hát", false);
+                } else if (linkText.includes("Thư viện")) {
+                    renderCards(musicData, "Thư viện của bạn (100 Bài Hát)", false);
+                }
             });
-        }
+        });
 
         document.querySelectorAll(".playlist-links a").forEach(link => {
             link.addEventListener("click", (e) => {
                 e.preventDefault();
                 const plName = link.getAttribute("data-playlist");
+                if (!plName) return;
                 activePlaylistName = plName;
 
                 if (plName === "Bài hát đã thích") {
-                    renderCards(musicData, "Bài hát đã thích", false);
+                    const found = playlists.find(p => p.name === "Bài hát đã thích");
+                    const songsInPl = musicData.filter(s => found.songs.includes(s.id));
+                    renderCards(songsInPl, "Bài hát đã thích", true, "Bài hát đã thích");
                 } else {
                     const found = playlists.find(p => p.name === plName);
                     if (found) {
@@ -408,7 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
         playSong(musicData[currentSongIndex]);
     });
 
-    renderCards(musicData, "Bài hát nổi bật", false);
+    renderCards(musicData, "Bài hát nổi bật (100 Bài)", false);
     renderPlaylistsSidebar();
 
     const searchInput = document.querySelector(".search-bar input");
@@ -461,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (playlistName !== "") {
                 playlists.push({
                     name: playlistName,
-                    songs: [1, 2]
+                    songs: [1, 2, 3]
                 });
                 renderPlaylistsSidebar();
                 modal.style.display = "none";
