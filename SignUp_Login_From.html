@@ -100,54 +100,6 @@
           </div>
       </div>
 
-      <script src="SignUp_LogIn_Form.js"></script>
-
-      <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbP0APrkFo74yYc9gE6e9GJ-i0Zo2i9c",
-      authDomain: "login-76351.firebaseapp.com",
-      projectId: "login-76351",
-      storageBucket: "login-76351.firebasestorage.app",
-      messagingSenderId: "117976134614",
-      appId: "1:117976134614:web:8c2bc9fd06f5d41719aa77",
-      measurementId: "G-NN2R42EEX9"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-
-    document.getElementById('traditional-login-form')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      localStorage.setItem("user_displayName", "Thành viên");
-      localStorage.setItem("user_photoURL", "");
-      window.location.href = "home.html";
-    });
-
-    function handleSocialLogin(providerName) {
-      let provider;
-      if (providerName === 'google') provider = new GoogleAuthProvider();
-      if (providerName === 'github') provider = new GithubAuthProvider();
-
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-          localStorage.setItem("user_displayName", user.displayName || "User");
-          localStorage.setItem("user_photoURL", user.photoURL || "");
-          window.location.href = "home.html";
-        })
-        .catch((error) => {
-          console.error("Lỗi đăng nhập:", error.message);
-          alert("Đăng nhập thất bại: " + error.message);
-        });
-    }
-
-    document.getElementById('btn-google-login')?.addEventListener('click', () => handleSocialLogin('google'));
-    document.getElementById('btn-google-reg')?.addEventListener('click', () => handleSocialLogin('google'));
-    document.getElementById('btn-github-login')?.addEventListener('click', () => handleSocialLogin('github'));
-    document.getElementById('btn-github-reg')?.addEventListener('click', () => handleSocialLogin('github'));
-  </script>
+    <script type="module" src="SignUp_LogIn_Form.js"></script>
 </body>
 </html>
