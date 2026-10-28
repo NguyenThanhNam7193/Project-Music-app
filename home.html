@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music App - Trang Chủ</title>
+    <link rel="stylesheet" href="home.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <!-- Sidebar trái -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class='bx bxl-spotify'></i>
+            <span>MusicApp</span>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="#" class="active"><i class='bx bxs-home'></i> Trang chủ</a></li>
+            <li><a href="#"><i class='bx bx-search'></i> Tìm kiếm</a></li>
+            <li><a href="#"><i class='bx bx-library'></i> Thư viện</a></li>
+        </ul>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="playlist-section">
+            <div class="playlist-header" style="font-size: 12px; font-weight: bold; color: #aaa; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <span>PLAYLIST</span>
+                <i class='bx bx-plus' style="cursor: pointer; font-size: 18px;"></i>
+            </div>
+            <ul class="playlist-links">
+                <li><a href="#"><i class='bx bxs-plus-square'></i> Tạo playlist</a></li>
+                <li><a href="#"><i class='bx bxs-heart-square'></i> Bài hát đã thích</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Nội dung chính -->
+    <main class="main-content">
+        <header class="header">
+            <div class="search-bar">
+                <i class='bx bx-search' style="color: #777; font-size: 18px;"></i>
+                <input type="text" placeholder="Bạn muốn nghe gì?">
+            </div>
+            
+            <div class="user-profile" id="logout-btn" title="Click để đăng xuất" style="cursor: pointer;">
+                <div class="user-avatar" id="avatar-box">U</div>
+                <span id="user-name" style="font-weight: 600; font-size: 14px;">Người dùng</span>
+            </div>
+        </header>
+
+        <section>
+            <h2 class="section-title">Bài hát nổi bật</h2>
+            <div class="card-grid">
+                <!-- Card bài hát được render động từ JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Thanh phát nhạc Player Bar -->
+    <footer class="player-bar">
+        <div class="now-playing">
+            <div class="track-img" style="overflow: hidden;">
+                <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" class="track-cover" style="width: 100%; height: 100%; object-fit: cover;" alt="Cover">
+            </div>
+            <div class="track-info">
+                <div class="track-name">Chọn một bài hát</div>
+                <div class="artist-name">Ca sĩ</div>
+            </div>
+        </div>
+
+        <div class="player-controls">
+            <div class="control-buttons">
+                <i class='bx bx-shuffle'></i>
+                <i class='bx bx-skip-previous' style="cursor: pointer;"></i>
+                <i class='bx bx-play-circle play-btn' style="cursor: pointer;"></i>
+                <i class='bx bx-skip-next' style="cursor: pointer;"></i>
+                <i class='bx bx-repeat'></i>
+            </div>
+            <div class="progress-bar-container">
+                <span class="current-time">0:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="total-duration">0:00</span>
+            </div>
+        </div>
+
+        <div class="volume-controls">
+            <i class='bx bx-volume-full' style="cursor: pointer;"></i>
+            <div class="progress-bar" style="width: 80px;">
+                <div class="progress-fill" style="width: 70%;"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Tạo Playlist Tùy Chỉnh -->
+    <div id="playlist-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 15px; font-size: 18px; color: #222;">Tạo playlist mới</h3>
+            <input type="text" id="playlist-name-input" placeholder="Nhập tên playlist..." style="width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 14px; margin-bottom: 20px; box-sizing: border-box;">
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button id="modal-cancel" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Hủy</button>
+                <button id="modal-confirm" style="padding: 8px 16px; border: none; background: #7494ec; color: #fff; border-radius: 6px; cursor: pointer; font-weight: 600;">Tạo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Bài Hát Vào Playlist -->
+    <div id="add-song-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 400px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 15px; font-size: 18px; color: #222; font-weight: 600;">Thêm bài hát vào playlist</h3>
+            <div id="modal-song-list" style="overflow-y: auto; max-height: 280px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding-right: 4px;">
+                <!-- Danh sách bài hát được render động -->
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button id="add-modal-close" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="home.js"></script>
+</body>
+</html>
