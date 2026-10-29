@@ -233,4 +233,53 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // --- XỬ LÝ ĐĂNG NHẬP MẠNG XÃ HỘI (GOOGLE & FACEBOOK) ---
+    const googleBtnLogin = document.getElementById("btn-google-login");
+    const facebookBtnLogin = document.getElementById("btn-facebook-login");
+
+    async function handleSocialLogin(providerType) {
+        try {
+            if (!window.auth || !window.signInWithPopup) {
+                showToast("Firebase chưa được khởi tạo đúng cách!", "error");
+                return;
+            }
+
+            let provider;
+            if (providerType === 'google') {
+                provider = new window.GoogleAuthProvider();
+            } else {
+                provider = new window.FacebookAuthProvider();
+            }
+            
+            const result = await window.signInWithPopup(window.auth, provider);
+            const user = result.user;
+            
+            localStorage.setItem("user_displayName", user.displayName || user.email.split('@')[0]);
+            localStorage.setItem("user_photoURL", user.photoURL || "");
+            localStorage.setItem("isLoggedIn", "true");
+            
+            showToast("Đăng nhập mạng xã hội thành công!", "success");
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 1000);
+        } catch (error) {
+            console.error("Lỗi đăng nhập mạng xã hội:", error);
+            showToast("Đăng nhập thất bại: " + error.message, "error");
+        }
+    }
+
+    if (googleBtnLogin) {
+        googleBtnLogin.addEventListener("click", (e) => {
+            e.preventDefault();
+            handleSocialLogin('google');
+        });
+    }
+
+    if (facebookBtnLogin) {
+        facebookBtnLogin.addEventListener("click", (e) => {
+            e.preventDefault();
+            handleSocialLogin('facebook');
+        });
+    }
 });
