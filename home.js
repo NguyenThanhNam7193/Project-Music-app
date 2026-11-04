@@ -1,10 +1,8 @@
-// Khai báo biến playlists toàn cục để các hàm bên ngoài truy cập được
 let playlists = [
     { name: "Bài hát đã thích", songs: [1, 3, 11] }
 ];
 
 let musicData = [
-    // 1. Sơn Tùng M-TP (10 bài)
     { id: 1, title: "Em Của Ngày Hôm Qua", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Sơn Tùng M-TP - Em Của Ngày Hôm Qua.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
     { id: 2, title: "Chắc Ai Đó Sẽ Về", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Sơn Tùng M-TP - Chắc Ai Đó Sẽ Về.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
     { id: 3, title: "Nơi Này Có Anh", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Sơn Tùng MTP - Nơi Này Có Anh (Việt Nam Lyrics Subtitles).mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
@@ -15,8 +13,6 @@ let musicData = [
     { id: 8, title: "Đừng Làm Trái Tim Anh Đau", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/SƠN TÙNG M-TP ĐỪNG LÀM TRÁI TIM ANH ĐAU OFFICIAL MUSIC VIDEO.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
     { id: 9, title: "Lạc Trôi", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Lạc Trôi Sơn Tùng MTP ‹ Lyric Video ›.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
     { id: 10, title: "Chúng Ta Của Tương Lai", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/[lyric] CHÚNG TA CỦA TƯƠNG LAI - Sơn Tùng M-TP [MlMJVJxugKg].mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
-
-    // 2. Quân A.P (10 bài)
     { id: 11, title: "Ai Là Người Thương Em", artist: "Quân A.P", desc: "Quân A.P", src: "audio/Quân ap/AI LÀ NGƯỜI THƯƠNG EM - QUÂN A.P LYRICS.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
     { id: 12, title: "Bông Hoa Đẹp Nhất", artist: "Quân A.P", desc: "Quân A.P", src: "audio/Quân ap/QUÂN A.P BÔNG HOA ĐẸP NHẤT OFFICIAL MUSIC VIDEO.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
     { id: 13, title: "Còn Gì Đau Hơn Chữ Đã Từng", artist: "Quân A.P", desc: "Quân A.P", src: "audio/Quân ap/QUÂN A.P _ Còn Gì Đau Hơn Chữ Đã Từng - Lyrics Audio [0guTY3qkGx0].mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
@@ -27,8 +23,6 @@ let musicData = [
     { id: 18, title: "Yêu Em Dại Khờ", artist: "Quân A.P", desc: "Quân A.P", src: "audio/Quân ap/Yêu em dại khờ _ Chàng trai si tình Quân A.P và lời thổ lộ khiến con tim thổn thức [MEM_pt63GlY]-[AudioTrimmer.com].mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
     { id: 19, title: "Phản Bội Chính Mình", artist: "Quân A.P", desc: "Quân A.P", src: "audio/Quân ap/Phản Bội Chính Mình - Quân A.P ft Vương Anh Tú _ Lyrics Video [SOWG9PjzT08].mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
     { id: 20, title: "Chiếc Khăn Gió Ấm", artist: "Quân A.P", desc: "Quân A.P", src: "audio/Quân ap/Chiếc Khăn Gió Ấm _ Quân A.P hát live cực 'cháy' khiến fan mê mệt _ Biển của hy vọng [4SB71XqtK3w]-[AudioTrimmer.com].mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
-
-    // 3. Bùi Trường Linh (10 bài)
     { id: 21, title: "Dù Cho Mai Về Sau", artist: "Bùi Trường Linh", desc: "Bùi Trường Linh", src: "audio/BuiTruongLinh/Dù Cho Mai Về Sau (Official Music Video) buitruonglinh.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
     { id: 22, title: "Đường Tôi Chở Em Về", artist: "Bùi Trường Linh", desc: "Bùi Trường Linh", src: "audio/BuiTruongLinh/Đường Tôi Chở Em Về buitruonglinh Lyrics Video.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
     { id: 23, title: "Từng Ngày Yêu Em", artist: "Bùi Trường Linh", desc: "Bùi Trường Linh", src: "audio/BuiTruongLinh/Từng Ngày Yêu Em buitruonglinh.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
@@ -39,8 +33,6 @@ let musicData = [
     { id: 28, title: "Lựa Chọn Của Em", artist: "Bùi Trường Linh", desc: "Bùi Trường Linh", src: "audio/BuiTruongLinh/Lựa Chọn Của Em _ buitruonglinh ft. vuphungtien, dautatdat [IJML-4ZYejA].mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
     { id: 29, title: "Việt Nam Thịnh Vượng Sáng Ngời", artist: "Bùi Trường Linh", desc: "Bùi Trường Linh", src: "audio/BuiTruongLinh/Thịnh Vượng Việt Nam Sáng Ngời buitruonglinh.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
     { id: 30, title: "Lời Tạm Biệt", artist: "Bùi Trường Linh", desc: "Bùi Trường Linh", src: "audio/BuiTruongLinh/Lời Tạm Biệt _ buitruonglinh [Xy9uRLB-1Bs].mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
-
-    // 4. Jack-J97 (10 bài)
     { id: 31, title: "Hồng Nhan", artist: "Jack-J97", desc: "Jack-J97", src: "audio/Jack-J97/JACK - HỒNG NHAN LYRIC VIDEO _ G5R [PyMpi8No_C4].mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
     { id: 32, title: "Bạc Phận", artist: "Jack-J97", desc: "Jack-J97", src: "audio/Jack-J97/BẠC PHẬN VIDEO LYRIC _ JACK x K-ICM [886d9rm_AFE].mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
     { id: 33, title: "Sóng Gió", artist: "Jack-J97", desc: "Jack-J97", src: "audio/Jack-J97/[lyrics] sóng gió_Jack_ J97@J97imjack [Ury91hEXlfE].mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
@@ -51,8 +43,6 @@ let musicData = [
     { id: 38, title: "Là 1 Thằng Con Trai", artist: "Jack-J97", desc: "Jack-J97", src: "audio/Jack-J97/Là 1 Thằng Con Trai - Jack - J97 x KProx「Lo - Fi Ver.」 _ Audio Lyrics Video [EQ0BI7CMUAc].mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
     { id: 39, title: "Về Bên Anh", artist: "Jack-J97", desc: "Jack-J97", src: "audio/Jack-J97/OFFICIAL MV VỀ BÊN ANH - Jack (G5R).mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
     { id: 40, title: "Việt Nam Tôi", artist: "Jack-J97", desc: "Jack-J97", src: "audio/Jack-J97/VIỆT NAM TÔI ICM x JACK ft. TRUNG LƯƠNG x CHẤN QUỐC OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
-
-    // 5. Đạt G (10 bài)
     { id: 41, title: "Anh Tự Do Nhưng Cô Đơn", artist: "Đạt G", desc: "Đạt G", src: "audio/Đạt G/Đạt G - Anh Tự Do Nhưng Cô Đơn Live at DearOcean DatGMusic _.mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
     { id: 42, title: "Thêm Bao Nhiêu Lâu", artist: "Đạt G", desc: "Đạt G", src: "audio/Đạt G/Thêm Bao Nhiêu Lâu - Đạt G __ OFFICIAL MV [sinhZ1l54K8].mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
     { id: 43, title: "Ngày Mai Em Đi Mất", artist: "Đạt G", desc: "Đạt G", src: "audio/Đạt G/NGÀY MAI EM ĐI MẤT - KHẢI ĐĂNG FT ĐẠT G (OFFICIAL MV).mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
@@ -63,8 +53,6 @@ let musicData = [
     { id: 48, title: "Đừng Quên Tên Anh", artist: "Đạt G", desc: "Đạt G", src: "audio/Đạt G/Đừng Quên Tên Anh - Hoa Vinh Official Music Video (4k).mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
     { id: 49, title: "Bánh Mì Không", artist: "Đạt G", desc: "Đạt G", src: "audio/Đạt G/Bánh Mì Không - ĐạtG x DuUyên OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
     { id: 50, title: "Ác Mộng Đẹp", artist: "Đạt G", desc: "Đạt G", src: "audio/Đạt G/Ác Mộng Đẹp - Đạt G _ Chapter 3_ Đẹp _ Album _Ác Mộng Đẹp_ [9eL4Scy4-Ys].mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
-
-    // 6. Thanh Hưng (10 bài)
     { id: 51, title: "Sai Người Sai Thời Điểm", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "audio/Thanh Hưng/Sai Người Sai Thời Điểm - Thanh Hưng _ Lyric Video [ICOcEzXsEOI].mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
     { id: 52, title: "Đúng Người Đúng Thời Điểm", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "audio/Thanh Hưng/Đúng Người Đúng Thời Điểm _ Official MV _ Thanh Hưng x Huy Cung x Mỹ Linh [KFmQUJ2dj3k].mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
     { id: 53, title: "Thay Tôi Yêu Cô Ấy", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "audio/Thanh Hưng/Thay Tôi Yêu Cô Ấy (ĐNSTĐ) - Thanh Hưng _ Official Lyrics Video [kSYhR8vnzBg].mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
@@ -75,8 +63,6 @@ let musicData = [
     { id: 58, title: "Khó Gần Dễ Xa", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "audio/Thanh Hưng/Khó Gần Dễ Xa - Thanh Hưng (Official MV) Đây Là Lần Cuối Anh Để Nước Mắt Rơi Thế Này.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
     { id: 59, title: "Anh thề đấy", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "audio/Thanh Hưng/ANH THỀ ĐẤY _ THANH HƯNG _ OFFICIAL MUSIC VIDEO [hnXZG1WxczU].mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
     { id: 60, title: "Em Cưới Rồi À", artist: "Thanh Hưng", desc: "Thanh Hưng", src: "audio/Thanh Hưng/EM CƯỚI RỒI À - THANH HƯNG “Em cuoi roi a, khong doi anh nua a” Official MV Valentine 2025.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
-
-    // 7. w/n (10 bài)
     { id: 61, title: "3107", artist: "w/n", desc: "w/n", src: "audio/wn/W n - 3 1 0 7 ( Official Video ) ft. Nâu, Duongg.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
     { id: 62, title: "3107-2", artist: "w/n", desc: "w/n", src: "audio/wn/3107-2 DuongG x NÂU x W N OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
     { id: 63, title: "3107-3", artist: "w/n", desc: "w/n", src: "audio/wn/W n - 3107 3 ( Official Video ) ft. 267, Nâu, Duongg,.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
@@ -87,8 +73,6 @@ let musicData = [
     { id: 68, title: "Simple Love (Remix)", artist: "w/n", desc: "w/n", src: "audio/wn/Simple Love - Obito x Seachains _ DuckV Remix [IeaRT-Gym6o].mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
     { id: 69, title: "SSD", artist: "w/n", desc: "w/n", src: "audio/wn/W n - SSD ft. (267, Nguyenn, PAR SG).mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
     { id: 70, title: "Text 07", artist: "w/n", desc: "w/n", src: "audio/wn/W n - Text 07 (ft. 267).mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
-
-    // 8. Soobin (10 bài)
     { id: 71, title: "Phía Sau Một Cô Gái", artist: "Soobin", desc: "Soobin", src: "audio/Soobin Hoàng Sơn/PHÍA SAU MỘT CÔ GÁI - Soobin Hoàng Sơn ( OFFICIAL Lyric Video ).mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
     { id: 72, title: "Xin Đừng Lặng Im", artist: "Soobin", desc: "Soobin", src: "audio/Soobin Hoàng Sơn/SOOBIN - Xin Đừng Lặng Im.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
     { id: 73, title: "The Playah", artist: "Soobin", desc: "Soobin", src: "audio/Soobin Hoàng Sơn/SOOBIN X SLIMV - THE PLAYAH (Special Performance _ Official Music Video) [d44UTUSTYKU].mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
@@ -99,8 +83,6 @@ let musicData = [
     { id: 78, title: "Lalala", artist: "Soobin", desc: "Soobin", src: "audio/Soobin Hoàng Sơn/LALALA - Soobin Hoàng Sơn - Official Music Video 4K [Ia_ddlGr1ic].mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
     { id: 79, title: "Giá Như", artist: "Soobin", desc: "Soobin", src: "audio/Soobin Hoàng Sơn/SOOBIN - giá như _ 'BẬT NÓ LÊN' Album (Official MV) [SeWt7IpZ0CA].mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
     { id: 80, title: "Mục Hạ Vô Nhân", artist: "Soobin", desc: "Soobin", src: "audio/Soobin Hoàng Sơn/Mục Hạ Vô Nhân (Official MV) _ SOOBIN - Binz - NSND Huỳnh Tú [FikdKWos-NQ].mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
-
-    // 9. Noo Phước Thịnh (10 bài)
     { id: 81, title: "Những Kẻ Mộng Mơ", artist: "Noo Phước Thịnh", desc: "Noo Phước Thịnh", src: "audio/Noo Phước Thịnh/NHỮNG KẺ MỘNG MƠ Noo Phước Thịnh OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
     { id: 82, title: "Em Đã Thương Người Ta Hơn Anh", artist: "Noo Phước Thịnh", desc: "Noo Phước Thịnh", src: "audio/Noo Phước Thịnh/Em Đã Thương Người Ta Hơn Anh _ NOO PHƯỚC THỊNH x VƯƠNG ANH TÚ _ OFFICIAL MV [fzfQUUTtEzk].mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
     { id: 83, title: "Như Phút Ban Đầu", artist: "Noo Phước Thịnh", desc: "Noo Phước Thịnh", src: "audio/Noo Phước Thịnh/Như Phút Ban Đầu - Noo Phước Thịnh [ Official Lyrics Video ].mp4", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
@@ -111,8 +93,6 @@ let musicData = [
     { id: 88, title: "Chạm Khẽ Tim Anh Một Chút Thôi", artist: "Noo Phước Thịnh", desc: "Noo Phước Thịnh", src: "audio/Noo Phước Thịnh/Chạm Khẽ Tim Anh Một Chút Thôi Noo Phước Thịnh LYRIC VIDEO.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
     { id: 89, title: "Gạt Đi Nước Mắt", artist: "Noo Phước Thịnh", desc: "Noo Phước Thịnh", src: "audio/Noo Phước Thịnh/Noo Phước Thịnh - Gạt Đi Nước Mắt ft. Tonny Việt [bD3B1I3Zgog].mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
     { id: 90, title: "Yêu Một Người Sao Buồn Đến Thế", artist: "Noo Phước Thịnh", desc: "Noo Phước Thịnh", src: "audio/Noo Phước Thịnh/YÊU MỘT NGƯỜI SAO BUỒN ĐẾN THẾ NOO PHUOC THINH OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
-
-    // 10. Nguyễn Hùng (10 bài)
     { id: 91, title: "Phép Màu", artist: "Nguyễn Hùng", desc: "Nguyễn Hùng", src: "audio/Nguyễn Hùng/Phép Màu (Đàn Cá Gỗ OST) - Mounter x MAYDAYs, Minh Tốc Official MV.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
     { id: 92, title: "Còn Gì Đẹp Hơn", artist: "Nguyễn Hùng", desc: "Nguyễn Hùng", src: "audio/Nguyễn Hùng/CÒN GÌ ĐẸP HƠN (ca khúc lấy cảm hứng từ phim Mưa đỏ) - Nguyễn Hùng Lyric Video.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
     { id: 93, title: "Kiếm Đâu Bây Giờ", artist: "Nguyễn Hùng", desc: "Nguyễn Hùng", src: "audio/Nguyễn Hùng/KIẾM ĐÂU BÂY GIỜ - Nguyễn Hùng (OST CỤC VÀNG CỦA NGOẠI) OFFICIAL MUSIC VIDEO.mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
@@ -125,7 +105,6 @@ let musicData = [
     { id: 100, title: "Ước Mơ Của Mẹ", artist: "Quân AP Cover", desc: "Quân AP cover", src: "audio/Nguyễn Hùng/QUÂN A.P - ƯỚC MƠ CỦA MẸ OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" }
 ];
 
-// Hàm chuẩn hóa tiếng Việt dùng chung toàn cục
 function removeVietnameseAccents(str) {
     if (!str) return '';
     return str.toLowerCase()
@@ -192,11 +171,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const shuffleBtn = document.querySelector(".bx-shuffle");
     const searchInput = document.querySelector(".main-content input, input[type='text']") || document.querySelector("input");
 
-    // === TÍCH HỢP ĐIỀU CHỈNH ÂM LƯỢNG CHO THANH VOLUME CÓ SẴN TRONG HTML ===
     const volumeContainer = document.querySelector(".volume-controls .progress-bar");
     if (volumeContainer) {
         let volFill = volumeContainer.querySelector(".progress-fill");
-        audioPlayer.volume = 0.7; // Mặc định 70%
+        audioPlayer.volume = 0.7;
         if (volFill) volFill.style.width = "70%";
 
         const updateVolumeByClick = (e) => {
@@ -262,7 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // === TÍCH HỢP TÌM KIẾM LIVE DROPDOWN & KHỚP KHÔNG DẤU ===
     if (searchInput) {
         if (searchInput.parentElement) {
             searchInput.parentElement.style.position = 'relative';
@@ -378,6 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audioPlayer.addEventListener("ended", () => {
+        // Tự động chuyển bài theo mặc định cũ
         currentIndex = getNextIndex();
         loadAndPlaySong(currentPlaylist, currentIndex);
     });
@@ -507,8 +485,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!playlistLinks) return;
 
         playlistLinks.innerHTML = `
-            <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> Tạo playlist</a></li>
-            <li><a href="#" id="liked-songs-link"><i class='bx bxs-heart-square'></i> Bài hát đã thích</a></li>
+            <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> <span class="nav-text">Tạo playlist</span></a></li>
+            <li><a href="#" id="liked-songs-link"><i class='bx bxs-heart-square'></i> <span class="nav-text">Bài hát đã thích</span></a></li>
             <hr style="border:0; border-top:1px solid #eee; margin: 8px 0;">
         `;
 
@@ -519,9 +497,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 li.innerHTML = `
                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 4px 0;">
                         <a href="#" class="custom-pl-link" style="display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; color: inherit;">
-                            <i class='bx bx-music'></i> <span>${plName}</span>
+                            <i class='bx bx-music'></i> <span class="nav-text">${plName}</span>
                         </a>
-                        <div style="display: flex; gap: 6px; align-items: center;">
+                        <div style="display: flex; gap: 6px; align-items: center;" class="nav-text">
                             <button onclick="downloadPlaylist('${plName}')" title="Tải xuống" style="background: none; border: none; color: #666; cursor: pointer; font-size: 14px; padding: 2px;"><i class='bx bx-download'></i></button>
                             <button onclick="shareSong(null, null, '${plName}')" title="Chia sẻ playlist" style="background: none; border: none; color: #7494ec; cursor: pointer; font-size: 14px; padding: 2px;"><i class='bx bx-share-alt'></i></button>
                             <button onclick="deletePlaylist('${plName}')" title="Xóa playlist" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 14px; padding: 2px;"><i class='bx bx-trash'></i></button>
@@ -734,7 +712,211 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderSidebarPlaylists();
     renderCards(musicData, "Bài hát nổi bật", false);
+
+    const toggleLibraryBtn = document.getElementById("toggle-library-btn");
+    if (toggleLibraryBtn) {
+        toggleLibraryBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            document.body.classList.toggle("library-collapsed");
+        });
+    }
+
+    // ==========================================
+    // TÍCH HỢP PB08: TẠO PLAYLIST THEO TÂM TRẠNG
+    // ==========================================
+    const playlistLinks = document.querySelector(".playlist-links");
+    if (playlistLinks && !document.getElementById("mood-playlist-trigger")) {
+        const moodLi = document.createElement("li");
+        moodLi.innerHTML = `<a href="#" id="mood-playlist-trigger"><i class='bx bxs-face-smile'></i> <span class="nav-text">Playlist theo tâm trạng</span></a>`;
+        playlistLinks.appendChild(moodLi);
+
+        moodLi.querySelector("a").addEventListener("click", (e) => {
+            e.preventDefault();
+            const moodModal = document.getElementById("mood-playlist-modal");
+            if (moodModal) moodModal.style.display = "flex";
+        });
+    }
+
+    const moodModal = document.getElementById("mood-playlist-modal");
+    const moodCancel = document.getElementById("mood-modal-cancel");
+    const moodConfirm = document.getElementById("mood-modal-confirm");
+    const moodSelect = document.getElementById("mood-select");
+
+    if (moodCancel && moodModal) {
+        moodCancel.addEventListener("click", () => {
+            moodModal.style.display = "none";
+        });
+    }
+
+    if (moodConfirm && moodSelect && moodModal) {
+        moodConfirm.addEventListener("click", () => {
+            const mood = moodSelect.value;
+            let targetSongs = [];
+
+            if (mood === "vui") {
+                targetSongs = musicData.filter(s => s.id % 2 === 0).slice(0, 8);
+            } else if (mood === "buồn") {
+                targetSongs = musicData.filter(s => s.id % 3 === 0).slice(0, 8);
+            } else if (mood === "chill") {
+                targetSongs = musicData.filter(s => s.id % 5 === 0).slice(0, 8);
+            } else {
+                targetSongs = musicData.slice(0, 8);
+            }
+
+            const playlistName = `Tâm trạng: ${mood.charAt(0).toUpperCase() + mood.slice(1)}`;
+            
+            let existingPl = playlists.find(p => p.name === playlistName);
+            if (!existingPl) {
+                playlists.push({
+                    name: playlistName,
+                    songs: targetSongs.map(s => s.id)
+                });
+                renderSidebarPlaylists();
+            }
+
+            moodModal.style.display = "none";
+            renderCards(targetSongs, playlistName, true, playlistName);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Đã tạo playlist!',
+                text: `Đã tạo thành công playlist cho tâm trạng "${mood}".`,
+                timer: 1500,
+                showConfirmButton: false,
+                background: '#ffffff',
+                color: '#333'
+            });
+        });
+    }
+
+    // ==========================================
+    // TÍCH HỢP HỆ THỐNG QUẢNG CÁO ÂM THANH (AUDIO ADVERTISEMENT SYSTEM - PB09 EXPANDED)
+    // ==========================================
+    initAudioAdSystem(audioPlayer);
 });
+
+// THƯ VIỆN QUẢNG CÁO ÂM THANH (TTS MP3/WAV)
+const audioAdsLibrary = [
+    { id: "ad-1", title: "Quảng cáo: Nâng cấp tài khoản Premium", src: "audio/QuanCaoDemo.m4a" },
+    { id: "ad-2", title: "Quảng cáo: Ưu đãi dành cho Học sinh - Sinh viên", src: "audio/QuanCaoDemo.m4a" }
+];
+
+// TRẠNG THÁI PHIÊN NGHE NHẠC (LƯU LOCALSTORAGE TRÁNH MẤT KHI REFRESH TRANG)
+let adSessionState = JSON.parse(localStorage.getItem('music_app_ad_state')) || {
+    completedSongs: 0,
+    adsPlayed: 0,
+    isAdPlaying: false
+};
+
+function saveAdSessionState() {
+    localStorage.setItem('music_app_ad_state', JSON.stringify(adSessionState));
+}
+
+// TRÌNH PHÁT QUẢNG CÁO ĐỘC LẬP (AUDIO AD PLAYER SEPARATE FROM MAIN MUSIC PLAYER)
+const adAudioPlayer = new Audio();
+
+// CÔNG THỨC QUY ĐỊNH KHOẢNG CÁCH: adInterval = 4 + (adsPlayed * 2)
+function getCurrentAdInterval() {
+    return 4 + (adSessionState.adsPlayed * 2);
+}
+
+// KHỞI TẠO HỆ THỐNG QUẢNG CÁO ÂM THANH MÓC NỐI SỰ KIỆN ENDED BÀI HÁT
+function initAudioAdSystem(mainAudioPlayer) {
+    if (!mainAudioPlayer) return;
+
+    // Lắng nghe sự kiện kết thúc bài hát tự nhiên (Chỉ tính khi kết thúc hoàn toàn)
+    mainAudioPlayer.addEventListener("ended", () => {
+        if (adSessionState.isAdPlaying) return;
+
+        // Tăng bộ đếm bài hát hoàn tất
+        adSessionState.completedSongs++;
+        saveAdSessionState();
+
+        const requiredInterval = getCurrentAdInterval();
+        console.log(`[Audio Ad System] Đã hoàn thành hoàn tất ${adSessionState.completedSongs}/${requiredInterval} bài hát.`);
+
+        // Kiểm tra điều kiện công thức phát quảng cáo
+        if (adSessionState.completedSongs >= requiredInterval) {
+            triggerAudioAdvertisement(mainAudioPlayer);
+        }
+    });
+
+    // Lắng nghe kết thúc quảng cáo âm thanh
+    adAudioPlayer.addEventListener("ended", () => {
+        finishAudioAdvertisement();
+    });
+
+    // Xử lý lỗi nạp file quảng cáo để tránh treo Music Player
+    adAudioPlayer.addEventListener("error", (e) => {
+        console.warn("[Audio Ad System] Lỗi khi tải file quảng cáo âm thanh. Bỏ qua quảng cáo để tiếp tục phát nhạc.", e);
+        finishAudioAdvertisement();
+    });
+}
+
+// BẮT ĐẦU PHÁT QUẢNG CÁO ÂM THANH
+function triggerAudioAdvertisement(mainAudioPlayer) {
+    if (adSessionState.isAdPlaying) return;
+    adSessionState.isAdPlaying = true;
+    saveAdSessionState();
+
+    // 1. Tạm dừng Music Player chính
+    if (mainAudioPlayer) {
+        mainAudioPlayer.pause();
+    }
+
+    // 2. Chọn ngẫu nhiên file quảng cáo âm thanh
+    const randomAd = audioAdsLibrary[Math.floor(Math.random() * audioAdsLibrary.length)];
+
+    // 3. Cập nhật giao diện trạng thái quảng cáo
+    const trackNameEl = document.querySelector(".track-name");
+    const artistNameEl = document.querySelector(".artist-name");
+    const playBtnEl = document.querySelector(".play-btn");
+
+    if (trackNameEl) trackNameEl.innerText = randomAd.title;
+    if (artistNameEl) artistNameEl.innerText = "Thông điệp tài trợ (Quảng cáo âm thanh)";
+    if (playBtnEl) playBtnEl.className = 'bx bx-pause-circle play-btn';
+
+    let adBannerNotice = document.getElementById("active-ad-notice");
+    if (!adBannerNotice) {
+        adBannerNotice = document.createElement("div");
+        adBannerNotice.id = "active-ad-notice";
+        adBannerNotice.style.cssText = "position: fixed; top: 20px; right: 20px; background: #ff4757; color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.3);";
+        document.body.appendChild(adBannerNotice);
+    }
+    adBannerNotice.innerText = "📢 Đang phát quảng cáo âm thanh...";
+    adBannerNotice.style.display = "block";
+
+    // 4. Phát quảng cáo từ trình phát riêng
+    adAudioPlayer.src = randomAd.src;
+    adAudioPlayer.play().catch(err => {
+        console.warn("[Audio Ad System] Trình duyệt chặn Autoplay quảng cáo:", err);
+        finishAudioAdvertisement();
+    });
+}
+
+// KẾT THÚC QUẢNG CÁO VÀ CHUYỂN TIẾP TỰ ĐỘNG
+function finishAudioAdvertisement() {
+    if (!adSessionState.isAdPlaying) return;
+
+    // Reset completedSongs về 0, tăng adsPlayed thêm 1
+    adSessionState.completedSongs = 0;
+    adSessionState.adsPlayed++;
+    adSessionState.isAdPlaying = false;
+    saveAdSessionState();
+
+    const adBannerNotice = document.getElementById("active-ad-notice");
+    if (adBannerNotice) {
+        adBannerNotice.style.display = "none";
+    }
+
+    console.log(`[Audio Ad System] Quảng cáo kết thúc. Chu kỳ tiếp theo cần: ${getCurrentAdInterval()} bài hát.`);
+
+    // Tự động chuyển bài hát tiếp theo và phát nhạc mượt mà
+    const nextBtn = document.querySelector(".bx-skip-next");
+    if (nextBtn) {
+        nextBtn.click();
+    }
+}
 
 window.shareSong = function(songId, songTitle, playlistName) {
     const baseUrl = window.location.origin + window.location.pathname;
@@ -787,8 +969,8 @@ window.deletePlaylist = function(plName) {
             const playlistLinks = document.querySelector(".playlist-links");
             if (playlistLinks) {
                 playlistLinks.innerHTML = `
-                    <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> Tạo playlist</a></li>
-                    <li><a href="#" id="liked-songs-link"><i class='bx bxs-heart-square'></i> Bài hát đã thích</a></li>
+                    <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> <span class="nav-text">Tạo playlist</span></a></li>
+                    <li><a href="#" id="liked-songs-link"><i class='bx bxs-heart-square'></i> <span class="nav-text">Bài hát đã thích</span></a></li>
                     <hr style="border:0; border-top:1px solid #eee; margin: 8px 0;">
                 `;
 
@@ -799,9 +981,9 @@ window.deletePlaylist = function(plName) {
                         li.innerHTML = `
                             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 4px 0;">
                                 <a href="#" class="custom-pl-link" style="display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; color: inherit;">
-                                    <i class='bx bx-music'></i> <span>${nameVal}</span>
+                                    <i class='bx bx-music'></i> <span class="nav-text">${nameVal}</span>
                                 </a>
-                                <div style="display: flex; gap: 6px; align-items: center;">
+                                <div style="display: flex; gap: 6px; align-items: center;" class="nav-text">
                                     <button onclick="downloadPlaylist('${nameVal}')" title="Tải xuống" style="background: none; border: none; color: #666; cursor: pointer; font-size: 14px; padding: 2px;"><i class='bx bx-download'></i></button>
                                     <button onclick="shareSong(null, null, '${nameVal}')" title="Chia sẻ playlist" style="background: none; border: none; color: #7494ec; cursor: pointer; font-size: 14px; padding: 2px;"><i class='bx bx-share-alt'></i></button>
                                     <button onclick="deletePlaylist('${nameVal}')" title="Xóa playlist" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 14px; padding: 2px;"><i class='bx bx-trash'></i></button>
@@ -862,7 +1044,6 @@ window.downloadPlaylist = function(plName) {
     downloadAnchor.remove();
 };
 
-// === TÍNH NĂNG PB07: GỢI Ý NHẠC CÁ NHÂN HÓA ===
 function renderPersonalizedRecommendations() {
     let likedSongs = JSON.parse(localStorage.getItem('likedSongs')) || [];
     

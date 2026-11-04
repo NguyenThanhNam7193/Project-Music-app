@@ -13,6 +13,12 @@ body {
     grid-template-rows: 1fr 90px;
     height: 100vh;
     overflow: hidden;
+    transition: grid-template-columns 0.3s ease;
+}
+
+/* Hiệu ứng thu gọn sidebar giống Spotify */
+body.library-collapsed {
+    grid-template-columns: 80px 1fr;
 }
 
 .sidebar {
@@ -23,6 +29,31 @@ body {
     gap: 24px;
     border-right: 1px solid #e0e0e0;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+    transition: width 0.3s ease;
+    overflow-y: auto;
+}
+
+body.library-collapsed .sidebar {
+    padding: 24px 10px;
+    align-items: center;
+}
+
+body.library-collapsed .logo span,
+body.library-collapsed .nav-text,
+body.library-collapsed .sidebar-divider,
+body.library-collapsed .playlist-header span {
+    display: none;
+}
+
+body.library-collapsed .nav-links a,
+body.library-collapsed .playlist-links a {
+    justify-content: center;
+    padding: 10px;
+}
+
+body.library-collapsed .playlist-links li a i,
+body.library-collapsed .nav-links li a i {
+    font-size: 24px;
 }
 
 .logo {
@@ -39,6 +70,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
 }
 
 .nav-links a, .playlist-links a {
@@ -66,6 +98,7 @@ body {
 
 .sidebar-divider {
     border-top: 1px solid #e8e8e8;
+    width: 100%;
 }
 
 .main-content {
@@ -295,4 +328,16 @@ body {
     justify-content: flex-end;
     color: #666;
     font-size: 20px;
+}
+
+/* Style bổ sung cho PB08 & PB09 & Audio Ads */
+#mood-playlist-modal select {
+    color: #333;
+}
+#ad-banner-popup {
+    animation: slideInUp 0.3s ease-out;
+}
+@keyframes slideInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }

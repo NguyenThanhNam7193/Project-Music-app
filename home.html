@@ -10,28 +10,27 @@
 </head>
 <body>
     <!-- Sidebar trái -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="logo">
             <i class='bx bxl-spotify'></i>
             <span>MusicApp</span>
         </div>
         
         <ul class="nav-links">
-            <li><a href="#" class="active"><i class='bx bxs-home'></i> Trang chủ</a></li>
-            <li><a href="#"><i class='bx bx-search'></i> Tìm kiếm</a></li>
-            <li><a href="#"><i class='bx bx-library'></i> Thư viện</a></li>
+            <li><a href="home.html" class="active"><i class='bx bxs-home'></i> <span class="nav-text">Trang chủ</span></a></li>
+            <li><a href="#" id="toggle-library-btn"><i class='bx bx-library'></i> <span class="nav-text">Thư viện</span></a></li>
         </ul>
 
         <div class="sidebar-divider"></div>
 
         <div class="playlist-section">
             <div class="playlist-header" style="font-size: 12px; font-weight: bold; color: #aaa; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                <span>PLAYLIST</span>
-                <i class='bx bx-plus' style="cursor: pointer; font-size: 18px;"></i>
+                <span class="nav-text">PLAYLIST</span>
+                <i class='bx bx-plus' style="cursor: pointer; font-size: 18px;" id="sidebar-plus-btn"></i>
             </div>
             <ul class="playlist-links">
-                <li><a href="#"><i class='bx bxs-plus-square'></i> Tạo playlist</a></li>
-                <li><a href="#"><i class='bx bxs-heart-square'></i> Bài hát đã thích</a></li>
+                <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> <span class="nav-text">Tạo playlist</span></a></li>
+                <li><a href="#" id="liked-songs-link"><i class='bx bxs-heart-square'></i> <span class="nav-text">Bài hát đã thích</span></a></li>
             </ul>
         </div>
     </aside>
@@ -118,6 +117,34 @@
                 <button id="add-modal-close" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Đóng</button>
             </div>
         </div>
+    </div>
+
+    <!-- Modal Tạo Playlist Theo Tâm Trạng (PB08) -->
+    <div id="mood-playlist-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 15px; font-size: 18px; color: #222;">Tạo playlist theo tâm trạng</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Chọn tâm trạng của bạn hôm nay:</p>
+            <select id="mood-select" style="width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 14px; margin-bottom: 20px; box-sizing: border-box; background: #fff;">
+                <option value="vui">Vui vẻ, Năng động</option>
+                <option value="buồn">Buồn, Sâu lắng</option>
+                <option value="chill">Chill, Thư giãn</option>
+                <option value="tập trung">Tập trung học tập / làm việc</option>
+            </select>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button id="mood-modal-cancel" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Hủy</button>
+                <button id="mood-modal-confirm" style="padding: 8px 16px; border: none; background: #7494ec; color: #fff; border-radius: 6px; cursor: pointer; font-weight: 600;">Tạo Playlist</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner Quảng Cáo Kiểm Soát Tần Suất (PB09) -->
+    <div id="ad-banner-popup" style="display: none; position: fixed; bottom: 100px; right: 20px; background: #282828; color: #fff; padding: 16px 20px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 1001; width: 300px; border-left: 4px solid #7494ec;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 12px; font-weight: bold; color: #aaa; text-transform: uppercase;">Quảng cáo tài trợ</span>
+            <button id="close-ad-btn" style="background: none; border: none; color: #fff; cursor: pointer; font-size: 16px;">&times;</button>
+        </div>
+        <p style="font-size: 13px; margin: 0 0 10px 0; color: #ddd;">Nâng cấp tài khoản Premium ngay để tận hưởng âm nhạc không giới hạn và không quảng cáo!</p>
+        <div style="font-size: 11px; color: #888; text-align: right;" id="ad-countdown">Quảng cáo sẽ đóng sau 5s</div>
     </div>
 
     <script src="home.js"></script>
