@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Trị Hệ Thống - Music App</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="header-title">
+                <i class='bx bxs-dashboard'></i>
+                <h2>Bảng Quản Trị Hệ Thống (Admin Dashboard)</h2>
+            </div>
+            <div class="header-actions">
+                <button id="refresh-btn" class="btn btn-secondary">
+                    <i class='bx bx-refresh'></i> Tải lại dữ liệu
+                </button>
+                <a href="home.html" class="btn btn-outline">
+                    <i class='bx bx-home-alt'></i> Về trang chủ
+                </a>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-users"><i class='bx bxs-user-detail'></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Tổng người dùng</span>
+                    <h3 id="stat-total-users">0</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-free"><i class='bx bxs-user'></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Tài khoản Free</span>
+                    <h3 id="stat-free-users">0</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-premium"><i class='bx bxs-star'></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Tài khoản Premium</span>
+                    <h3 id="stat-premium-users">0</h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="table-section">
+            <div class="table-header">
+                <h3><i class='bx bx-table'></i> Danh sách người dùng từ Database (SQLite)</h3>
+                <div class="search-box">
+                    <i class='bx bx-search'></i>
+                    <input type="text" id="admin-search-input" placeholder="Tìm theo username hoặc email...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên đăng nhập (Username)</th>
+                            <th>Email</th>
+                            <th>Loại tài khoản</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- Dữ liệu render động -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

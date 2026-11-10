@@ -43,9 +43,23 @@
                 <input type="text" placeholder="Bạn muốn nghe gì?">
             </div>
             
-            <div class="user-profile" id="logout-btn" title="Click để đăng xuất" style="cursor: pointer;">
-                <div class="user-avatar" id="avatar-box">U</div>
-                <span id="user-name" style="font-weight: 600; font-size: 14px;">Người dùng</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <!-- Khu vực hiển thị thông tin và trạng thái tài khoản (PB10) -->
+                <div class="user-profile" style="background-color: #ffffff; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                    <div class="user-avatar" id="avatar-box">U</div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span id="user-name" style="font-weight: 600; font-size: 13px; color: #333;">Người dùng</span>
+                        <span id="account-badge" style="font-size: 10px; font-weight: bold; color: #ff4757; background: #ffebee; padding: 1px 5px; border-radius: 4px; width: fit-content;">FREE</span>
+                    </div>
+                </div>
+
+                <!-- Nút nâng cấp Premium (PB10) -->
+                <button id="upgrade-premium-btn" style="padding: 8px 14px; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); border: none; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; box-shadow: 0 4px 12px rgba(253, 160, 133, 0.4); transition: 0.2s;">Nâng cấp Premium ⭐</button>
+
+                <!-- Nút đăng xuất -->
+                <div class="user-profile" id="logout-btn" title="Click để đăng xuất" style="cursor: pointer; background-color: #ffffff; padding: 8px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; align-items: center; justify-content: center;">
+                    <i class='bx bx-log-out' style="font-size: 18px; color: #666;"></i>
+                </div>
             </div>
         </header>
 

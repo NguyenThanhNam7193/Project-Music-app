@@ -10,7 +10,7 @@ let musicData = [
     { id: 5, title: "Muộn Rồi Mà Sao Còn", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/SƠN TÙNG M-TP _ MUỘN RỒI MÀ SAO CÒN _ LYRICS VIDEO [-4jird32CnE].mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
     { id: 6, title: "Có Chắc Yêu Là Đây", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Có Chắc Yêu Là Đây - Sơn Tùng M-TP [ Lyrics __ Speed Up ] _ Hoshino - Blue Archive Live2D [dp6zsliTuVM].mp3", cover: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=300&auto=format&fit=crop&q=60" },
     { id: 7, title: "Chúng Ta Của Hiện Tại", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/[lyric] CHÚNG TA CỦA TƯƠNG LAI - Sơn Tùng M-TP [MlMJVJxugKg].mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60" },
-    { id: 8, title: "Đừng Làm Trái Tim Anh Đau", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/SƠN TÙNG M-TP ĐỪNG LÀM TRÁI TIM ANH ĐAU OFFICIAL MUSIC VIDEO.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
+    { id: 8, title: "Đừng Làm Trái Tim Anh Đau", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/SƠN TÙNG M-TP ĐỪNG LÀM TRÁI TIM ANH ĐÂU OFFICIAL MUSIC VIDEO.mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60" },
     { id: 9, title: "Lạc Trôi", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Lạc Trôi Sơn Tùng MTP ‹ Lyric Video ›.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60" },
     { id: 10, title: "Chúng Ta Của Tương Lai", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/[lyric] CHÚNG TA CỦA TƯƠNG LAI - Sơn Tùng M-TP [MlMJVJxugKg].mp3", cover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=60" },
     { id: 11, title: "Ai Là Người Thương Em", artist: "Quân A.P", desc: "Quân A.P", src: "audio/Quân ap/AI LÀ NGƯỜI THƯƠNG EM - QUÂN A.P LYRICS.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" },
@@ -105,12 +105,51 @@ let musicData = [
     { id: 100, title: "Ước Mơ Của Mẹ", artist: "Quân AP Cover", desc: "Quân AP cover", src: "audio/Nguyễn Hùng/QUÂN A.P - ƯỚC MƠ CỦA MẸ OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60" }
 ];
 
+// Biến toàn cục quản lý trạng thái Premium của người dùng hiện tại (PB10)
+let userIsPremium = false;
+
 function removeVietnameseAccents(str) {
     if (!str) return '';
     return str.toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+
+// Hàm gọi API Backend kiểm tra trạng thái Premium chính thức từ Database (PB10)
+async function checkUserPremiumStatus(username) {
+    if (!username) return;
+    try {
+        const response = await fetch(`http://localhost:3000/api/user-status/${encodeURIComponent(username)}`);
+        const data = await response.json();
+        if (data.success) {
+            userIsPremium = data.is_premium;
+            const badgeEl = document.getElementById("account-badge");
+            const upgradeBtn = document.getElementById("upgrade-premium-btn");
+            
+            if (userIsPremium) {
+                if (badgeEl) {
+                    badgeEl.innerText = "PREMIUM ⭐";
+                    badgeEl.style.color = "#2ed573";
+                    badgeEl.style.background = "#e8f8f0";
+                }
+                if (upgradeBtn) {
+                    upgradeBtn.style.display = "none"; // Ẩn nút nâng cấp nếu đã là tài khoản Premium
+                }
+            } else {
+                if (badgeEl) {
+                    badgeEl.innerText = "FREE";
+                    badgeEl.style.color = "#ff4757";
+                    badgeEl.style.background = "#ffebee";
+                }
+                if (upgradeBtn) {
+                    upgradeBtn.style.display = "block";
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Không thể kết nối lấy trạng thái Premium từ server:", err);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -120,6 +159,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const nameElement = document.getElementById("user-name");
     if (nameElement) nameElement.innerText = userName;
 
+    // Kiểm tra trạng thái Premium ngay khi tải trang (PB10)
+    checkUserPremiumStatus(userName);
+
     const avatarBox = document.getElementById("avatar-box");
     if (avatarBox) {
         if (userPhoto) {
@@ -127,6 +169,42 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             avatarBox.innerText = userName.charAt(0).toUpperCase();
         }
+    }
+
+    // Xử lý sự kiện bấm nút Nâng cấp tài khoản Premium (PB10)
+    const upgradePremiumBtn = document.getElementById("upgrade-premium-btn");
+    if (upgradePremiumBtn) {
+        upgradePremiumBtn.addEventListener("click", async () => {
+            const username = localStorage.getItem("user_displayName");
+            if (!username) return;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/upgrade-premium', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Nâng cấp thành công!',
+                        text: 'Tài khoản của bạn đã được nâng cấp lên gói Premium. Tận hưởng âm nhạc không quảng cáo!',
+                        confirmButtonColor: '#7494ec',
+                        background: '#ffffff',
+                        color: '#333'
+                    }).then(() => {
+                        location.reload(); // Tải lại để cập nhật trạng thái mới nhất từ DB
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Thất bại', text: data.message || 'Không thể nâng cấp tài khoản!' });
+                }
+            } catch (err) {
+                console.error("Lỗi kết nối nâng cấp:", err);
+                Swal.fire({ icon: 'error', title: 'Lỗi server', text: 'Không thể kết nối đến cơ sở dữ liệu!' });
+            }
+        });
     }
 
     const logoutBtn = document.getElementById("logout-dev") || document.getElementById("logout-btn");
@@ -355,7 +433,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audioPlayer.addEventListener("ended", () => {
-        // Tự động chuyển bài theo mặc định cũ
         currentIndex = getNextIndex();
         loadAndPlaySong(currentPlaylist, currentIndex);
     });
@@ -721,9 +798,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
     // TÍCH HỢP PB08: TẠO PLAYLIST THEO TÂM TRẠNG
-    // ==========================================
     const playlistLinks = document.querySelector(".playlist-links");
     if (playlistLinks && !document.getElementById("mood-playlist-trigger")) {
         const moodLi = document.createElement("li");
@@ -789,9 +864,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // TÍCH HỢP HỆ THỐNG QUẢNG CÁO ÂM THANH (AUDIO ADVERTISEMENT SYSTEM - PB09 EXPANDED)
-    // ==========================================
+    // GỢI Ý CÁ NHÂN HÓA (PB07)
+    renderPersonalizedRecommendations();
+
+    // TÍCH HỢP HỆ THỐNG QUẢNG CÁO ÂM THANH (AUDIO ADVERTISEMENT SYSTEM - PB09 & PB10)
     initAudioAdSystem(audioPlayer);
 });
 
@@ -812,62 +888,59 @@ function saveAdSessionState() {
     localStorage.setItem('music_app_ad_state', JSON.stringify(adSessionState));
 }
 
-// TRÌNH PHÁT QUẢNG CÁO ĐỘC LẬP (AUDIO AD PLAYER SEPARATE FROM MAIN MUSIC PLAYER)
+// TRÌNH PHÁT QUẢNG CÁO ĐỘC LẬP
 const adAudioPlayer = new Audio();
 
-// CÔNG THỨC QUY ĐỊNH KHOẢNG CÁCH: adInterval = 4 + (adsPlayed * 2)
 function getCurrentAdInterval() {
     return 4 + (adSessionState.adsPlayed * 2);
 }
 
-// KHỞI TẠO HỆ THỐNG QUẢNG CÁO ÂM THANH MÓC NỐI SỰ KIỆN ENDED BÀI HÁT
+// KHỞI TẠO HỆ THỐNG QUẢNG CÁO ÂM THANH (ĐIỀU KIỆN HÓA CHO PREMIUM - PB10)
 function initAudioAdSystem(mainAudioPlayer) {
     if (!mainAudioPlayer) return;
 
-    // Lắng nghe sự kiện kết thúc bài hát tự nhiên (Chỉ tính khi kết thúc hoàn toàn)
     mainAudioPlayer.addEventListener("ended", () => {
+        // YÊU CẦU QUAN TRỌNG PB10: Nếu tài khoản là Premium, tuyệt đối bỏ qua quảng cáo âm thanh
+        if (userIsPremium) {
+            console.log("[Audio Ad System] Tài khoản Premium - Bỏ qua quảng cáo âm thanh.");
+            return; 
+        }
+
         if (adSessionState.isAdPlaying) return;
 
-        // Tăng bộ đếm bài hát hoàn tất
         adSessionState.completedSongs++;
         saveAdSessionState();
 
         const requiredInterval = getCurrentAdInterval();
         console.log(`[Audio Ad System] Đã hoàn thành hoàn tất ${adSessionState.completedSongs}/${requiredInterval} bài hát.`);
 
-        // Kiểm tra điều kiện công thức phát quảng cáo
         if (adSessionState.completedSongs >= requiredInterval) {
             triggerAudioAdvertisement(mainAudioPlayer);
         }
     });
 
-    // Lắng nghe kết thúc quảng cáo âm thanh
     adAudioPlayer.addEventListener("ended", () => {
         finishAudioAdvertisement();
     });
 
-    // Xử lý lỗi nạp file quảng cáo để tránh treo Music Player
     adAudioPlayer.addEventListener("error", (e) => {
-        console.warn("[Audio Ad System] Lỗi khi tải file quảng cáo âm thanh. Bỏ qua quảng cáo để tiếp tục phát nhạc.", e);
+        console.warn("[Audio Ad System] Lỗi khi tải file quảng cáo âm thanh. Bỏ qua để tiếp tục phát nhạc.", e);
         finishAudioAdvertisement();
     });
 }
 
-// BẮT ĐẦU PHÁT QUẢNG CÁO ÂM THANH
 function triggerAudioAdvertisement(mainAudioPlayer) {
+    if (userIsPremium) return; // Đảm bảo an toàn kép cho Premium
     if (adSessionState.isAdPlaying) return;
     adSessionState.isAdPlaying = true;
     saveAdSessionState();
 
-    // 1. Tạm dừng Music Player chính
     if (mainAudioPlayer) {
         mainAudioPlayer.pause();
     }
 
-    // 2. Chọn ngẫu nhiên file quảng cáo âm thanh
     const randomAd = audioAdsLibrary[Math.floor(Math.random() * audioAdsLibrary.length)];
 
-    // 3. Cập nhật giao diện trạng thái quảng cáo
     const trackNameEl = document.querySelector(".track-name");
     const artistNameEl = document.querySelector(".artist-name");
     const playBtnEl = document.querySelector(".play-btn");
@@ -886,7 +959,6 @@ function triggerAudioAdvertisement(mainAudioPlayer) {
     adBannerNotice.innerText = "📢 Đang phát quảng cáo âm thanh...";
     adBannerNotice.style.display = "block";
 
-    // 4. Phát quảng cáo từ trình phát riêng
     adAudioPlayer.src = randomAd.src;
     adAudioPlayer.play().catch(err => {
         console.warn("[Audio Ad System] Trình duyệt chặn Autoplay quảng cáo:", err);
@@ -894,11 +966,9 @@ function triggerAudioAdvertisement(mainAudioPlayer) {
     });
 }
 
-// KẾT THÚC QUẢNG CÁO VÀ CHUYỂN TIẾP TỰ ĐỘNG
 function finishAudioAdvertisement() {
     if (!adSessionState.isAdPlaying) return;
 
-    // Reset completedSongs về 0, tăng adsPlayed thêm 1
     adSessionState.completedSongs = 0;
     adSessionState.adsPlayed++;
     adSessionState.isAdPlaying = false;
@@ -909,9 +979,6 @@ function finishAudioAdvertisement() {
         adBannerNotice.style.display = "none";
     }
 
-    console.log(`[Audio Ad System] Quảng cáo kết thúc. Chu kỳ tiếp theo cần: ${getCurrentAdInterval()} bài hát.`);
-
-    // Tự động chuyển bài hát tiếp theo và phát nhạc mượt mà
     const nextBtn = document.querySelector(".bx-skip-next");
     if (nextBtn) {
         nextBtn.click();
@@ -1109,4 +1176,3 @@ function renderPersonalizedRecommendations() {
         recSection.innerHTML = html;
     }
 }
-renderPersonalizedRecommendations();
