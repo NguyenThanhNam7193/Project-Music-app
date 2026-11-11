@@ -9,7 +9,95 @@ let sharedPlaylists = JSON.parse(localStorage.getItem(sharedPlaylistsKey)) || []
 
 let globalPublicPlaylists = JSON.parse(localStorage.getItem('music_app_global_public_playlists')) || {};
 
-// 100 BÀI HÁT GỐC ĐẦY ĐỦ CỦA BẠN (GIỮ NGUYÊN 100%)
+// --- KHỐI LOGIC QUẢN LÝ QUẢNG CÁO MỚI THÊM ---
+let adState = JSON.parse(localStorage.getItem('music_app_ad_state')) || {
+    totalSongsPlayed: 0,
+    adsTriggeredCount: 0,
+    lastAdTimestamp: Date.now()
+};
+
+// Tạo một thẻ Audio chuyên phát quảng cáo ngầm để không ảnh hưởng luồng nhạc chính
+const adAudio = new Audio();
+let isPlayingAd = false;
+const MOCK_AD_SRC = "audio/advertisement.mp3"; // Ông tự thay đường dẫn audio quảng cáo của ông vào đây
+
+function checkAndPlayAdOnSongEnd() {
+    if (userIsPremium) return false; // Tài khoản Premium không có quảng cáo
+
+    adState.totalSongsPlayed++;
+    localStorage.setItem('music_app_ad_state', JSON.stringify(adState));
+
+    let shouldTriggerAd = false;
+    let now = Date.now();
+    let elapsedMinutes = (now - adState.lastAdTimestamp) / (1000 * 60);
+
+    // Tính hệ số tăng thời gian: cứ 20 bài thì tăng thêm 10 phút (15 + 10 * n)
+    let n = Math.floor(adState.totalSongsPlayed / 20);
+    let requiredIntervalMinutes = 15 + (n * 10);
+
+    if (adState.adsTriggeredCount === 0 && adState.totalSongsPlayed >= 1) {
+        // Quảng cáo đầu tiên phát ngay sau khi nghe xong bài hát đầu tiên
+        shouldTriggerAd = true;
+    } else if (elapsedMinutes >= requiredIntervalMinutes) {
+        // Các quảng cáo tiếp theo theo chu kỳ thời gian
+        shouldTriggerAd = true;
+    }
+
+    if (shouldTriggerAd) {
+        triggerMandatoryAd();
+        return true;
+    }
+    return false;
+}
+
+function triggerMandatoryAd() {
+    isPlayingAd = true;
+    // Tạm ngưng bài hát chính
+    // (audioPlayer sẽ được gọi ngưng từ hàm bên dưới)
+    
+    adAudio.src = MOCK_AD_SRC;
+    adAudio.load();
+    
+    Swal.fire({
+        title: 'Đang phát quảng cáo',
+        text: 'Vui lòng nghe hết quảng cáo để tiếp tục thưởng thức âm nhạc.',
+        icon: 'info',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    adAudio.play().catch(err => {
+        console.log("Không tìm thấy file audio quảng cáo, tự động giả lập kết thúc sau 5s:", err);
+        setTimeout(() => finishAdPlayback(), 5000);
+    });
+
+    adAudio.onended = () => {
+        finishAdPlayback();
+    };
+}
+
+function finishAdPlayback() {
+    isPlayingAd = false;
+    adState.adsTriggeredCount++;
+    adState.lastAdTimestamp = Date.now();
+    localStorage.setItem('music_app_ad_state', JSON.stringify(adState));
+    
+    Swal.close();
+    Swal.fire({
+        icon: 'success',
+        title: 'Quảng cáo đã kết thúc',
+        text: 'Tiếp tục phát nhạc của bạn!',
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
+// --- KẾT THÚC KHỐI LOGIC QUẢNG CÁO ---
+
+// ĐÃ KHÔI PHỤC ĐẦY ĐỦ 100 BÀI HÁT GỐC CỦA BẠN
 let musicData = [
     { id: 1, title: "Em Của Ngày Hôm Qua", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Sơn Tùng M-TP - Em Của Ngày Hôm Qua.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60", plays: 1500000, date: "2024-01-01" },
     { id: 2, title: "Chắc Ai Đó Sẽ Về", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Sơn Tùng M-TP - Chắc Ai Đó Sẽ Về.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60", plays: 1200000, date: "2024-01-05" },
@@ -288,7 +376,7 @@ function removeVietnameseAccents(str) {
 document.addEventListener("DOMContentLoaded", () => {
     changeLanguage(currentLang);
 
-    // Xử lý URL chia sẻ playlist (Chế độ Khách / Đã đăng nhập)
+    // Xử lý URL chia sẻ playlist
     const urlParams = new URLSearchParams(window.location.search);
     const sharedId = urlParams.get('shared_playlist_id');
 
@@ -585,12 +673,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // --- TÍNH NĂNG DROPDOWN TÌM KIẾM GIỐNG ẢNH MẪU 2 & NGHE THỬ NGẪU NHIÊN 1 ĐOẠN ---
+    // --- DROPDOWN TÌM KIẾM & NGHE THỬ NGẪU NHIÊN 1 ĐOẠN ---
     const searchBarContainer = document.querySelector(".search-bar");
     const mainSearch = document.getElementById("search-input-main");
 
     if (searchBarContainer && mainSearch) {
-        // Tạo khung dropdown kết quả tìm kiếm nếu chưa có
         let searchDropdown = document.getElementById("custom-search-dropdown");
         if (!searchDropdown) {
             searchDropdown = document.createElement("div");
@@ -613,7 +700,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Lọc kết quả giống ảnh mẫu 2
             const filteredSongs = musicData.filter(s => 
                 removeVietnameseAccents(s.title).includes(query) || 
                 removeVietnameseAccents(s.artist).includes(query)
@@ -639,7 +725,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (filteredSongs.length === 0) {
                 searchDropdown.innerHTML += `<div style="padding: 12px; color: #777; text-align: center;">Không tìm thấy bài hát nào.</div>`;
             } else {
-                filteredSongs.slice(0, 5).forEach((song, idx) => {
+                filteredSongs.slice(0, 5).forEach((song) => {
                     const itemEl = document.createElement("div");
                     itemEl.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: 0.2s;";
                     itemEl.innerHTML = `
@@ -661,7 +747,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                     `;
 
-                    // Hover hiệu ứng trỏ chuột hiện nút play
                     itemEl.addEventListener("mouseenter", () => {
                         itemEl.style.background = "rgba(255,255,255,0.1)";
                         itemEl.querySelector(".hover-play-icon").style.opacity = "1";
@@ -671,10 +756,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         itemEl.querySelector(".hover-play-icon").style.opacity = "0";
                     });
 
-                    // Click vào nghe thử ngẫu nhiên 1 đoạn để người dùng quyết định
                     itemEl.addEventListener("click", () => {
                         previewAudio.src = song.src;
-                        // Nhảy ngẫu nhiên đến 1 đoạn (ví dụ từ giây thứ 15 hoặc 30 của bài)
                         previewAudio.currentTime = 15; 
                         previewAudio.play().catch(err => console.log(err));
                         
@@ -688,7 +771,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             timer: 3000
                         });
 
-                        // Tự dừng sau 5 giây nghe thử
                         clearTimeout(previewTimeout);
                         previewTimeout = setTimeout(() => {
                             previewAudio.pause();
@@ -699,11 +781,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
 
-            // Đồng thời lọc màn hình chính
             renderCards(filteredSongs);
         });
 
-        // Ẩn dropdown khi click ra ngoài
         document.addEventListener("click", (e) => {
             if (!searchBarContainer.contains(e.target)) {
                 searchDropdown.style.display = "none";
@@ -842,7 +922,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Gắn sự kiện khi bài hát phát xong -> Kích hoạt check quảng cáo rồi mới sang bài tiếp theo
     audioPlayer.addEventListener("ended", () => {
+        // Kiểm tra xem có cần phát quảng cáo ngay sau khi nghe xong bài này không
+        let adTriggered = checkAndPlayAdOnSongEnd();
+        
+        if (adTriggered) {
+            // Khi đang phát quảng cáo, ta tạm thời chờ quảng cáo chạy xong rồi mới tự động chuyển bài tiếp theo
+            adAudio.onended = () => {
+                finishAdPlayback();
+                proceedToNextSong();
+            };
+        } else {
+            proceedToNextSong();
+        }
+    });
+
+    function proceedToNextSong() {
         if (repeatMode === 2) {
             audioPlayer.play();
         } else if (repeatMode === 1 || isShuffle) {
@@ -856,7 +952,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (playPauseBtn) playPauseBtn.className = 'bx bx-play-circle play-btn';
             }
         }
-    });
+    }
 
     if (playPauseBtn) {
         playPauseBtn.addEventListener("click", () => {
@@ -869,7 +965,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             } else {
                 audioPlayer.pause();
-                playPauseBtn.className = 'bx bx-pause-circle play-btn';
+                playPauseBtn.className = 'bx bx-play-circle play-btn';
             }
         });
     }
@@ -968,7 +1064,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderCards(musicData);
 
-    // Sidebar Playlists & Tính năng xử lý Playlist trơn chu
+    // Sidebar Playlists & Tính năng xử lý Playlist
     window.renderSidebarPlaylists = function() {
         const playlistLinks = document.querySelector(".playlist-links");
         if (!playlistLinks) return;
@@ -1055,7 +1151,6 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem(sharedPlaylistsKey, JSON.stringify(sharedPlaylists));
     };
 
-    // Hàm render Playlist chi tiết kèm nút "Phát ngay" chuẩn xác
     window.renderPlaylistView = function(plName, isShared = false) {
         const pl = isShared ? sharedPlaylists.find(p => p.name === plName) : playlists.find(p => p.name === plName);
         if (!pl) return;
@@ -1075,7 +1170,6 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         if (plSongs.length > 0) {
-            // Sửa lỗi nút Phát ngay gọi trực tiếp hàm loadAndPlaySong với danh sách bài hát trong playlist
             const jsonSongs = encodeURIComponent(JSON.stringify(plSongs));
             htmlHeader += `
                     <button onclick="loadAndPlaySong(JSON.parse(decodeURIComponent('${jsonSongs}')), 0)" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: #2ed573; color: #fff; border: none; border-radius: 20px; font-weight: 600; font-size: 13px; cursor: pointer; box-shadow: 0 4px 10px rgba(46,213,115,0.3);">
