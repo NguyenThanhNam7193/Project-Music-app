@@ -4,7 +4,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music App - Trang Chủ</title>
+    <title data-i18n="app_title">Music App - Trang Chủ</title>
     <link rel="stylesheet" href="home.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
@@ -17,20 +17,33 @@
         </div>
         
         <ul class="nav-links">
-            <li><a href="home.html" class="active"><i class='bx bxs-home'></i> <span class="nav-text">Trang chủ</span></a></li>
-            <li><a href="#" id="toggle-library-btn"><i class='bx bx-library'></i> <span class="nav-text">Thư viện</span></a></li>
+            <li><a href="home.html" class="active"><i class='bx bxs-home'></i> <span class="nav-text" data-i18n="nav_home">Trang chủ</span></a></li>
+            <li><a href="#" id="toggle-library-btn"><i class='bx bx-library'></i> <span class="nav-text" data-i18n="nav_library">Thư viện</span></a></li>
         </ul>
 
         <div class="sidebar-divider"></div>
 
+        <!-- Khu vực Playlist chia sẻ từ bạn bè (Phần 1.2) -->
+        <div class="shared-playlist-section" id="shared-playlist-container" style="margin-bottom: 12px; display: none;">
+            <div style="font-size: 11px; font-weight: bold; color: #7494ec; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                <i class='bx bx-share-alt'></i> <span class="nav-text">Playlist cùng bạn bè</span>
+            </div>
+            <ul class="shared-playlist-links" style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
+                <!-- Render động các playlist được chia sẻ -->
+            </ul>
+        </div>
+
         <div class="playlist-section">
             <div class="playlist-header" style="font-size: 12px; font-weight: bold; color: #aaa; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                <span class="nav-text">PLAYLIST</span>
-                <i class='bx bx-plus' style="cursor: pointer; font-size: 18px;" id="sidebar-plus-btn"></i>
+                <span class="nav-text" data-i18n="nav_playlist">PLAYLIST</span>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <i class='bx bx-smile' title="Tạo playlist theo tâm trạng" style="cursor: pointer; font-size: 16px; color: #7494ec;" id="mood-playlist-trigger"></i>
+                    <i class='bx bx-plus' style="cursor: pointer; font-size: 18px;" id="sidebar-plus-btn"></i>
+                </div>
             </div>
             <ul class="playlist-links">
-                <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> <span class="nav-text">Tạo playlist</span></a></li>
-                <li><a href="#" id="liked-songs-link"><i class='bx bxs-heart-square'></i> <span class="nav-text">Bài hát đã thích</span></a></li>
+                <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> <span class="nav-text" data-i18n="nav_create_playlist">Tạo playlist</span></a></li>
+                <li><a href="#" id="liked-songs-link"><i class='bx bxs-heart-square'></i> <span class="nav-text" data-i18n="nav_liked_songs">Bài hát đã thích</span></a></li>
             </ul>
         </div>
     </aside>
@@ -40,35 +53,90 @@
         <header class="header">
             <div class="search-bar">
                 <i class='bx bx-search' style="color: #777; font-size: 18px;"></i>
-                <input type="text" placeholder="Bạn muốn nghe gì?">
+                <input type="text" id="search-input-main" data-i18n-placeholder="search_placeholder" placeholder="Bạn muốn nghe gì?">
             </div>
             
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <!-- Khu vực hiển thị thông tin và trạng thái tài khoản (PB10) -->
-                <div class="user-profile" style="background-color: #ffffff; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+            <div style="display: flex; align-items: center; gap: 12px; position: relative;">
+                <!-- Khu vực hiển thị thông tin và trạng thái tài khoản -->
+                <div class="user-profile" id="user-profile-dropdown-btn" style="background-color: #ffffff; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); cursor: pointer;">
                     <div class="user-avatar" id="avatar-box">U</div>
                     <div style="display: flex; flex-direction: column;">
                         <span id="user-name" style="font-weight: 600; font-size: 13px; color: #333;">Người dùng</span>
                         <span id="account-badge" style="font-size: 10px; font-weight: bold; color: #ff4757; background: #ffebee; padding: 1px 5px; border-radius: 4px; width: fit-content;">FREE</span>
                     </div>
+                    <i class='bx bx-chevron-down' style="color: #666; font-size: 16px;"></i>
                 </div>
 
-                <!-- Nút nâng cấp Premium (PB10) -->
-                <button id="upgrade-premium-btn" style="padding: 8px 14px; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); border: none; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; box-shadow: 0 4px 12px rgba(253, 160, 133, 0.4); transition: 0.2s;">Nâng cấp Premium ⭐</button>
-
-                <!-- Nút đăng xuất -->
-                <div class="user-profile" id="logout-btn" title="Click để đăng xuất" style="cursor: pointer; background-color: #ffffff; padding: 8px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; align-items: center; justify-content: center;">
-                    <i class='bx bx-log-out' style="font-size: 18px; color: #666;"></i>
+                <!-- Dropdown Menu Tài khoản cá nhân -->
+                <div id="account-dropdown-menu" style="display: none; position: absolute; top: 55px; right: 0; background: #fff; width: 220px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; overflow: hidden; border: 1px solid #eee;">
+                    <div style="padding: 14px 16px; border-bottom: 1px solid #f0f0f0; background: #fafafa;">
+                        <div id="dropdown-user-name" style="font-weight: 600; font-size: 14px; color: #222;">Người dùng</div>
+                        <div id="dropdown-user-email" style="font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">email@example.com</div>
+                    </div>
+                    <ul style="list-style: none; padding: 6px 0; margin: 0; font-size: 13.5px;">
+                        <li><a href="#" id="menu-profile-btn" style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #333; text-decoration: none;"><i class='bx bx-user' style="font-size: 18px; color: #7494ec;"></i> <span data-i18n="menu_profile">Trang cá nhân</span></a></li>
+                        <li><a href="#" id="menu-history-btn" style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #333; text-decoration: none;"><i class='bx bx-history' style="font-size: 18px; color: #7494ec;"></i> <span data-i18n="menu_history">Nhạc nghe gần đây</span></a></li>
+                        <li><a href="#" id="menu-upgrade-btn" style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #333; text-decoration: none;"><i class='bx bxs-star' style="font-size: 18px; color: #f6d365;"></i> <span data-i18n="menu_upgrade">Nâng cấp Premium</span></a></li>
+                        <li><a href="#" id="menu-lang-btn" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; color: #333; text-decoration: none;"><div style="display: flex; align-items: center; gap: 10px;"><i class='bx bx-globe' style="font-size: 18px; color: #7494ec;"></i> <span data-i18n="menu_language">Ngôn ngữ</span></div><span id="current-lang-label" style="font-size: 11px; font-weight: bold; background: #eef2ff; color: #7494ec; padding: 2px 6px; border-radius: 4px;">VI</span></a></li>
+                        <div style="border-top: 1px solid #eee; margin: 4px 0;"></div>
+                        <li><a href="#" id="menu-logout-btn" style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #ff4757; text-decoration: none;"><i class='bx bx-log-out' style="font-size: 18px;"></i> <span data-i18n="menu_logout">Đăng xuất</span></a></li>
+                    </ul>
                 </div>
+
+                <!-- Nút nâng cấp Premium -->
+                <button id="upgrade-premium-btn" style="padding: 8px 14px; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); border: none; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; box-shadow: 0 4px 12px rgba(253, 160, 133, 0.4); transition: 0.2s;" data-i18n="btn_upgrade">Nâng cấp Premium ⭐</button>
             </div>
         </header>
 
-        <section>
-            <h2 class="section-title">Bài hát nổi bật</h2>
-            <div class="card-grid">
-                <!-- Card bài hát được render động từ JS -->
+        <!-- Thanh danh mục Khám phá, Phổ biến, Mới nhất, Thịnh hành -->
+        <div class="discover-tabs" style="display: flex; gap: 24px; margin-bottom: 24px; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 12px;">
+            <button class="tab-btn active" data-tab="explore" style="background: none; border: none; font-weight: 600; font-size: 15px; color: #7494ec; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid #7494ec; transition: 0.2s;" data-i18n="tab_explore">Khám phá</button>
+            <button class="tab-btn" data-tab="popular" style="background: none; border: none; font-weight: 500; font-size: 15px; color: #666; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; transition: 0.2s;" data-i18n="tab_popular">Phổ biến</button>
+            <button class="tab-btn" data-tab="latest" style="background: none; border: none; font-weight: 500; font-size: 15px; color: #666; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; transition: 0.2s;" data-i18n="tab_latest">Mới nhất</button>
+            <button class="tab-btn" data-tab="trending" style="background: none; border: none; font-weight: 500; font-size: 15px; color: #666; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; transition: 0.2s;" data-i18n="tab_trending">Thịnh hành</button>
+        </div>
+
+        <!-- Bố cục lưới thông minh 2 cột -->
+        <div class="dashboard-grid-layout" style="display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start;">
+            <div class="main-feed-column">
+                <!-- Hero Banner Nổi Bật -->
+                <div class="hero-banner" id="hero-banner-section" style="background: linear-gradient(135deg, #7494ec 0%, #91acfc 100%); border-radius: 16px; padding: 24px; color: #fff; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 24px rgba(116, 148, 236, 0.25);">
+                    <div>
+                        <span style="background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase;" data-i18n="banner_tag">Nghệ sĩ nổi bật</span>
+                        <h1 style="font-size: 26px; margin: 10px 0 6px 0;">Sơn Tùng M-TP</h1>
+                        <p style="font-size: 13px; opacity: 0.9; margin-bottom: 16px;" data-i18n="banner_desc">Khám phá các ca khúc hit mới nhất được yêu thích tuần này.</p>
+                        <button onclick="loadAndPlaySong(musicData, 0)" style="padding: 8px 18px; background: #fff; color: #7494ec; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" data-i18n="banner_btn">Phát ngay</button>
+                    </div>
+                    <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid rgba(255,255,255,0.4); flex-shrink: 0;">
+                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" style="width: 100%; height: 100%; object-fit: cover;" alt="Hero">
+                    </div>
+                </div>
+
+                <section>
+                    <h2 class="section-title" id="main-section-title" data-i18n="section_featured">Bài hát nổi bật</h2>
+                    <div class="card-grid">
+                        <!-- Card bài hát được render động từ JS -->
+                    </div>
+                </section>
             </div>
-        </section>
+
+            <!-- Cột Widget Phải -->
+            <div class="right-widget-column" style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="background: linear-gradient(135deg, #111 0%, #282828 100%); color: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="font-size: 12px; color: #f6d365; font-weight: bold; margin-bottom: 6px;" data-i18n="widget_vip">TÀI KHOẢN VIP</div>
+                    <h3 style="font-size: 16px; margin-bottom: 8px;" data-i18n="widget_experience">Trải nghiệm Premium</h3>
+                    <p style="font-size: 12px; color: #aaa; margin-bottom: 14px;" data-i18n="widget_desc">Nghe nhạc chất lượng cao, không quảng cáo gián đoạn.</p>
+                    <button id="sidebar-upgrade-btn" style="width: 100%; padding: 8px; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); border: none; border-radius: 20px; color: #fff; font-weight: bold; font-size: 12px; cursor: pointer;" data-i18n="widget_btn">Nâng cấp ngay</button>
+                </div>
+
+                <div style="background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
+                    <h3 style="font-size: 15px; font-weight: 600; color: #222; margin-bottom: 14px;" data-i18n="friends_listening">Bạn bè đang nghe</h3>
+                    <div id="friends-listening-container" style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Render động -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Thanh phát nhạc Player Bar -->
@@ -78,22 +146,22 @@
                 <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" class="track-cover" style="width: 100%; height: 100%; object-fit: cover;" alt="Cover">
             </div>
             <div class="track-info">
-                <div class="track-name">Chọn một bài hát</div>
-                <div class="artist-name">Ca sĩ</div>
+                <div class="track-name" data-i18n="player_select">Chọn một bài hát</div>
+                <div class="artist-name" data-i18n="player_artist">Ca sĩ</div>
             </div>
         </div>
 
         <div class="player-controls">
             <div class="control-buttons">
-                <i class='bx bx-shuffle'></i>
-                <i class='bx bx-skip-previous' style="cursor: pointer;"></i>
-                <i class='bx bx-play-circle play-btn' style="cursor: pointer;"></i>
-                <i class='bx bx-skip-next' style="cursor: pointer;"></i>
-                <i class='bx bx-repeat'></i>
+                <i class='bx bx-shuffle' id="shuffle-btn" title="Xáo trộn bài hát" style="cursor: pointer; transition: 0.2s;"></i>
+                <i class='bx bx-skip-previous' id="prev-btn" style="cursor: pointer;"></i>
+                <i class='bx bx-play-circle play-btn' id="play-pause-btn" style="cursor: pointer;"></i>
+                <i class='bx bx-skip-next' id="next-btn" style="cursor: pointer;"></i>
+                <i class='bx bx-repeat' id="repeat-btn" title="Lặp lại bài hát" style="cursor: pointer; transition: 0.2s; position: relative;"></i>
             </div>
             <div class="progress-bar-container">
                 <span class="current-time">0:00</span>
-                <div class="progress-bar">
+                <div class="progress-bar" id="main-progress-bar">
                     <div class="progress-fill"></div>
                 </div>
                 <span class="total-duration">0:00</span>
@@ -102,7 +170,7 @@
 
         <div class="volume-controls">
             <i class='bx bx-volume-full' style="cursor: pointer;"></i>
-            <div class="progress-bar" style="width: 80px;">
+            <div class="progress-bar" id="volume-bar" style="width: 80px;">
                 <div class="progress-fill" style="width: 70%;"></div>
             </div>
         </div>
@@ -110,55 +178,142 @@
 
     <!-- Modal Tạo Playlist Tùy Chỉnh -->
     <div id="playlist-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-            <h3 style="margin-bottom: 15px; font-size: 18px; color: #222;">Tạo playlist mới</h3>
+        <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h3 id="playlist-modal-title" style="margin-bottom: 15px; font-size: 18px; color: #222;" data-i18n="modal_create_pl">Tạo playlist mới</h3>
             <input type="text" id="playlist-name-input" placeholder="Nhập tên playlist..." style="width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 14px; margin-bottom: 20px; box-sizing: border-box;">
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button id="modal-cancel" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Hủy</button>
-                <button id="modal-confirm" style="padding: 8px 16px; border: none; background: #7494ec; color: #fff; border-radius: 6px; cursor: pointer; font-weight: 600;">Tạo</button>
+                <button id="modal-cancel" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;" data-i18n="btn_cancel">Hủy</button>
+                <button id="modal-confirm" style="padding: 8px 16px; border: none; background: #7494ec; color: #fff; border-radius: 6px; cursor: pointer; font-weight: 600;" data-i18n="btn_create">Tạo</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Thêm Bài Hát Vào Playlist -->
+    <!-- Modal Thêm Bài Hát Nhanh (Khôi phục Phần 2) -->
     <div id="add-song-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 400px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-            <h3 style="margin-bottom: 15px; font-size: 18px; color: #222; font-weight: 600;">Thêm bài hát vào playlist</h3>
-            <div id="modal-song-list" style="overflow-y: auto; max-height: 280px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding-right: 4px;">
-                <!-- Danh sách bài hát được render động -->
+        <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 460px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 id="add-song-modal-title" style="font-size: 18px; color: #222; font-weight: 600;">Thêm bài hát nhanh</h3>
+                <button id="add-modal-close" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #777;">×</button>
+            </div>
+            <!-- Ô tìm kiếm bài hát hoặc ca sĩ (Phần 2.2, 2.3, 2.5) -->
+            <div style="position: relative; margin-bottom: 15px;">
+                <i class='bx bx-search' style="position: absolute; top: 12px; left: 12px; color: #777; font-size: 16px;"></i>
+                <input type="text" id="quick-search-song-input" placeholder="Tìm kiếm theo tên bài hát hoặc ca sĩ..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 13.5px; box-sizing: border-box;">
+            </div>
+            <div id="modal-song-list" style="overflow-y: auto; max-height: 320px; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                <!-- Render động danh sách tìm kiếm -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tạo Playlist Theo Tâm Trạng (Khôi phục Phần 3) -->
+    <div id="mood-playlist-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; padding: 28px; border-radius: 20px; width: 500px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.25); position: relative;">
+            <button id="mood-modal-close" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: #777;">×</button>
+            
+            <div id="mood-step-1">
+                <h3 style="font-size: 20px; color: #222; margin-bottom: 6px; text-align: center;">Tạo playlist theo tâm trạng</h3>
+                <p style="font-size: 13.5px; color: #666; margin-bottom: 20px; text-align: center;">"Tâm trạng hôm nay của bạn như thế nào?"</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <button class="mood-option-btn" data-mood="vui" style="padding: 12px; border: 2px solid #e0e0e0; background: #fff; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;">😊 Vui vẻ, hạnh phúc</button>
+                    <button class="mood-option-btn" data-mood="buồn" style="padding: 12px; border: 2px solid #e0e0e0; background: #fff; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;">😢 Buồn bã, cô đơn</button>
+                    <button class="mood-option-btn" data-mood="lãng mạn" style="padding: 12px; border: 2px solid #e0e0e0; background: #fff; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;">❤️ Đang yêu, lãng mạn</button>
+                    <button class="mood-option-btn" data-mood="thư giãn" style="padding: 12px; border: 2px solid #e0e0e0; background: #fff; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;">😌 Thư giãn, bình yên</button>
+                    <button class="mood-option-btn" data-mood="năng động" style="padding: 12px; border: 2px solid #e0e0e0; background: #fff; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;">🔥 Năng động, tràn đầy</button>
+                    <button class="mood-option-btn" data-mood="chill" style="padding: 12px; border: 2px solid #e0e0e0; background: #fff; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;">🌙 Tâm trạng muốn chill</button>
+                </div>
+            </div>
+
+            <div id="mood-step-2" style="display: none; flex-direction: column; flex-grow: 1;">
+                <h3 style="font-size: 18px; color: #222; margin-bottom: 6px;">Bài hát gợi ý theo tâm trạng</h3>
+                <p style="font-size: 12.5px; color: #666; margin-bottom: 12px;">Chọn các bài hát bạn muốn đưa vào playlist:</p>
+                <div id="mood-songs-suggestion-list" style="overflow-y: auto; max-height: 250px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; padding-right: 4px;">
+                    <!-- Render gợi ý -->
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="mood-playlist-name-input" placeholder="Nhập tên playlist mới..." style="width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 14px; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button id="mood-back-btn" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Quay lại</button>
+                    <button id="mood-save-playlist-btn" style="padding: 8px 18px; border: none; background: #7494ec; color: #fff; border-radius: 6px; cursor: pointer; font-weight: 600;">Lưu vào thư viện</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Hồ sơ cá nhân -->
+    <div id="profile-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; padding: 30px; border-radius: 16px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;">
+            <h3 style="margin-bottom: 20px; font-size: 20px; color: #222;" data-i18n="profile_title">Thông tin cá nhân</h3>
+            <div style="margin-bottom: 16px;">
+                <div id="profile-avatar-preview" style="width: 80px; height: 80px; border-radius: 50%; background: #7494ec; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; overflow: hidden;">U</div>
+                <input type="text" id="profile-avatar-input" placeholder="URL ảnh đại diện..." style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; margin-bottom: 10px;">
+            </div>
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 12px; font-weight: 600; color: #666;" data-i18n="profile_name">Họ và tên / Username</label>
+                <input type="text" id="profile-name-input" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-top: 4px; box-sizing: border-box;">
+            </div>
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="font-size: 12px; font-weight: 600; color: #666;">Email</label>
+                <input type="email" id="profile-email-input" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-top: 4px; box-sizing: border-box; background: #f9f9f9;" readonly>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="profile-cancel-btn" style="flex: 1; padding: 10px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; color: #333;" data-i18n="btn_cancel">Hủy</button>
+                <button id="profile-save-btn" style="flex: 1; padding: 10px; background: #7494ec; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; color: #fff;" data-i18n="btn_save">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nhạc nghe gần đây -->
+    <div id="history-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 450px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 15px; font-size: 18px; color: #222;" data-i18n="history_title">Nhạc nghe gần đây</h3>
+            <div id="history-song-list" style="overflow-y: auto; max-height: 320px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; padding-right: 4px;">
+                <!-- Render động -->
             </div>
             <div style="display: flex; justify-content: flex-end;">
-                <button id="add-modal-close" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Đóng</button>
+                <button id="history-close-btn" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;" data-i18n="btn_close">Đóng</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Tạo Playlist Theo Tâm Trạng (PB08) -->
-    <div id="mood-playlist-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="background: #ffffff; padding: 24px; border-radius: 12px; width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-            <h3 style="margin-bottom: 15px; font-size: 18px; color: #222;">Tạo playlist theo tâm trạng</h3>
-            <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Chọn tâm trạng của bạn hôm nay:</p>
-            <select id="mood-select" style="width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 14px; margin-bottom: 20px; box-sizing: border-box; background: #fff;">
-                <option value="vui">Vui vẻ, Năng động</option>
-                <option value="buồn">Buồn, Sâu lắng</option>
-                <option value="chill">Chill, Thư giãn</option>
-                <option value="tập trung">Tập trung học tập / làm việc</option>
-            </select>
-            <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button id="mood-modal-cancel" style="padding: 8px 16px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Hủy</button>
-                <button id="mood-modal-confirm" style="padding: 8px 16px; border: none; background: #7494ec; color: #fff; border-radius: 6px; cursor: pointer; font-weight: 600;">Tạo Playlist</button>
+    <!-- Modal Giao diện nâng cấp Premium -->
+    <div id="premium-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; padding: 30px; border-radius: 20px; width: 480px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); text-align: center; position: relative;">
+            <button id="premium-close-icon" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: #777;">×</button>
+            <h2 style="font-size: 22px; color: #222; margin-bottom: 6px;" data-i18n="prem_modal_title">Nâng cấp tài khoản Premium</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;" data-i18n="prem_modal_subtitle">Chọn gói đăng ký phù hợp với bạn để trải nghiệm âm nhạc đỉnh cao.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                <!-- Gói 1 -->
+                <div class="prem-package-card" data-package="1" style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;">
+                    <div style="text-align: left;">
+                        <div style="font-weight: bold; font-size: 15px; color: #333;" data-i18n="pkg_1_name">Gói 1 tháng</div>
+                        <div style="font-size: 12px; color: #777;" data-i18n="pkg_1_desc">Thời hạn 30 ngày</div>
+                    </div>
+                    <div style="font-weight: bold; font-size: 16px; color: #7494ec;">15.000 VNĐ</div>
+                </div>
+                <!-- Gói 2 -->
+                <div class="prem-package-card selected" data-package="3" style="border: 2px solid #7494ec; background: #f0f4ff; border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;">
+                    <div style="text-align: left;">
+                        <div style="font-weight: bold; font-size: 15px; color: #333;" data-i18n="pkg_2_name">Gói 3 tháng (Phổ biến)</div>
+                        <div style="font-size: 12px; color: #777;" data-i18n="pkg_2_desc">Thời hạn 90 ngày</div>
+                    </div>
+                    <div style="font-weight: bold; font-size: 16px; color: #7494ec;">33.000 VNĐ</div>
+                </div>
+                <!-- Gói 3 -->
+                <div class="prem-package-card" data-package="12" style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;">
+                    <div style="text-align: left;">
+                        <div style="font-weight: bold; font-size: 15px; color: #333;" data-i18n="pkg_3_name">Gói 1 năm (Tiết kiệm)</div>
+                        <div style="font-size: 12px; color: #777;" data-i18n="pkg_3_desc">Thời hạn 365 ngày</div>
+                    </div>
+                    <div style="font-weight: bold; font-size: 16px; color: #7494ec;">259.000 VNĐ</div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Banner Quảng Cáo Kiểm Soát Tần Suất (PB09) -->
-    <div id="ad-banner-popup" style="display: none; position: fixed; bottom: 100px; right: 20px; background: #282828; color: #fff; padding: 16px 20px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 1001; width: 300px; border-left: 4px solid #7494ec;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-size: 12px; font-weight: bold; color: #aaa; text-transform: uppercase;">Quảng cáo tài trợ</span>
-            <button id="close-ad-btn" style="background: none; border: none; color: #fff; cursor: pointer; font-size: 16px;">&times;</button>
+            <button id="confirm-upgrade-payment-btn" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #7494ec, #5a7bda); border: none; border-radius: 10px; color: #fff; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(116,148,236,0.4);" data-i18n="btn_confirm_pay">Xác nhận thanh toán (DEMO)</button>
+            <p style="font-size: 11px; color: #999; margin-top: 12px;" data-i18n="demo_notice">* Đây là giao dịch mô phỏng (DEMO), không trừ tiền thật qua ngân hàng.</p>
         </div>
-        <p style="font-size: 13px; margin: 0 0 10px 0; color: #ddd;">Nâng cấp tài khoản Premium ngay để tận hưởng âm nhạc không giới hạn và không quảng cáo!</p>
-        <div style="font-size: 11px; color: #888; text-align: right;" id="ad-countdown">Quảng cáo sẽ đóng sau 5s</div>
     </div>
 
     <script src="home.js"></script>

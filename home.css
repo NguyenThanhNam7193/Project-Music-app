@@ -16,7 +16,6 @@ body {
     transition: grid-template-columns 0.3s ease;
 }
 
-/* Hiệu ứng thu gọn sidebar giống Spotify */
 body.library-collapsed {
     grid-template-columns: 80px 1fr;
 }
@@ -46,13 +45,15 @@ body.library-collapsed .playlist-header span {
 }
 
 body.library-collapsed .nav-links a,
-body.library-collapsed .playlist-links a {
+body.library-collapsed .playlist-links a,
+body.library-collapsed .shared-playlist-links a {
     justify-content: center;
     padding: 10px;
 }
 
 body.library-collapsed .playlist-links li a i,
-body.library-collapsed .nav-links li a i {
+body.library-collapsed .nav-links li a i,
+body.library-collapsed .shared-playlist-links li a i {
     font-size: 24px;
 }
 
@@ -65,7 +66,7 @@ body.library-collapsed .nav-links li a i {
     color: #7494ec;
 }
 
-.nav-links, .playlist-links {
+.nav-links, .playlist-links, .shared-playlist-links {
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -73,7 +74,7 @@ body.library-collapsed .nav-links li a i {
     width: 100%;
 }
 
-.nav-links a, .playlist-links a {
+.nav-links a, .playlist-links a, .shared-playlist-links a {
     color: #666;
     text-decoration: none;
     display: flex;
@@ -86,7 +87,7 @@ body.library-collapsed .nav-links li a i {
     transition: 0.2s;
 }
 
-.nav-links a:hover, .playlist-links a:hover {
+.nav-links a:hover, .playlist-links a:hover, .shared-playlist-links a:hover {
     color: #7494ec;
     background-color: #f0f4ff;
 }
@@ -111,7 +112,7 @@ body.library-collapsed .nav-links li a i {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
 }
 
 .search-bar {
@@ -160,16 +161,16 @@ body.library-collapsed .nav-links li a i {
 }
 
 .section-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
     color: #222;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 18px;
     margin-bottom: 40px;
 }
 
@@ -201,7 +202,7 @@ body.library-collapsed .nav-links li a i {
 }
 
 .card-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     color: #222;
     margin-bottom: 6px;
@@ -314,7 +315,7 @@ body.library-collapsed .nav-links li a i {
 }
 
 .progress-fill {
-    width: 35%;
+    width: 0%;
     height: 100%;
     background-color: #7494ec;
     border-radius: 3px;
@@ -330,14 +331,17 @@ body.library-collapsed .nav-links li a i {
     font-size: 20px;
 }
 
-/* Style bổ sung cho PB08 & PB09 & Audio Ads */
-#mood-playlist-modal select {
-    color: #333;
+#account-dropdown-menu.show {
+    display: block !important;
 }
-#ad-banner-popup {
-    animation: slideInUp 0.3s ease-out;
+
+.prem-package-card.selected {
+    border: 2px solid #7494ec !important;
+    background: #f0f4ff !important;
 }
-@keyframes slideInUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+
+.mood-option-btn:hover {
+    border-color: #7494ec !important;
+    background: #f0f4ff !important;
+    color: #7494ec;
 }
