@@ -49,7 +49,16 @@
             </div>
         </section>
 
-        <section class="table-section">
+        <!-- Thanh chuyển đổi giữa các bảng Database -->
+        <div class="admin-tabs">
+            <button class="admin-tab-btn active" data-target="tab-users"><i class='bx bxs-user-account'></i> Bảng Users</button>
+            <button class="admin-tab-btn" data-target="tab-songs"><i class='bx bxs-music'></i> Bảng Songs (<span id="songs-count-badge">0</span>)</button>
+            <button class="admin-tab-btn" data-target="tab-playlists"><i class='bx bxs-playlist'></i> Bảng Playlists & Playlist_Songs</button>
+            <button class="admin-tab-btn" data-target="tab-history"><i class='bx bx-history'></i> Bảng Listening_History</button>
+        </div>
+
+        <!-- Tab 1: Bảng Users (Giữ nguyên 100%) -->
+        <section class="table-section admin-tab-content" id="tab-users">
             <div class="table-header">
                 <h3><i class='bx bx-table'></i> Danh sách người dùng từ Database (SQLite)</h3>
                 <div class="search-box">
@@ -73,6 +82,74 @@
                     <tbody id="user-table-body">
                         <!-- Dữ liệu render động -->
                     </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tab 2: Bảng Songs -->
+        <section class="table-section admin-tab-content" id="tab-songs" style="display: none;">
+            <div class="table-header">
+                <h3><i class='bx bx-music'></i> Kho bài hát lưu trong Database (Bảng Songs)</h3>
+                <div class="search-box">
+                    <i class='bx bx-search'></i>
+                    <input type="text" id="admin-search-song" placeholder="Tìm bài hát hoặc ca sĩ...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên bài hát</th>
+                            <th>Ca sĩ</th>
+                            <th>Đường dẫn file MP3 (src)</th>
+                            <th>Lượt nghe</th>
+                        </tr>
+                    </thead>
+                    <tbody id="song-table-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tab 3: Bảng Playlists & Playlist_Songs -->
+        <section class="table-section admin-tab-content" id="tab-playlists" style="display: none;">
+            <div class="table-header">
+                <h3><i class='bx bxs-playlist'></i> Danh sách Playlist & Số lượng bài hát (Bảng Playlists + Playlist_Songs)</h3>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Playlist</th>
+                            <th>Người tạo (Username)</th>
+                            <th>Tên Playlist</th>
+                            <th>Số bài hát đã lưu</th>
+                            <th>Ngày tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playlist-table-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tab 4: Bảng Listening_History -->
+        <section class="table-section admin-tab-content" id="tab-history" style="display: none;">
+            <div class="table-header">
+                <h3><i class='bx bx-history'></i> Nhật ký nghe nhạc của người dùng (Bảng Listening_History)</h3>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Người nghe (Username)</th>
+                            <th>ID Bài hát</th>
+                            <th>Tên bài hát</th>
+                            <th>Ca sĩ</th>
+                            <th>Thời gian nghe</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body"></tbody>
                 </table>
             </div>
         </section>

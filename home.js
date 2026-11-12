@@ -16,13 +16,12 @@ let adState = JSON.parse(localStorage.getItem('music_app_ad_state')) || {
     lastAdTimestamp: Date.now()
 };
 
-// Tạo một thẻ Audio chuyên phát quảng cáo ngầm để không ảnh hưởng luồng nhạc chính
 const adAudio = new Audio();
 let isPlayingAd = false;
-const MOCK_AD_SRC = "audio/advertisement.mp3"; // Ông tự thay đường dẫn audio quảng cáo của ông vào đây
+const MOCK_AD_SRC = "audio/QuanCaoDemo.m4a";
 
 function checkAndPlayAdOnSongEnd() {
-    if (userIsPremium) return false; // Tài khoản Premium không có quảng cáo
+    if (userIsPremium) return false;
 
     adState.totalSongsPlayed++;
     localStorage.setItem('music_app_ad_state', JSON.stringify(adState));
@@ -52,9 +51,6 @@ function checkAndPlayAdOnSongEnd() {
 
 function triggerMandatoryAd() {
     isPlayingAd = true;
-    // Tạm ngưng bài hát chính
-    // (audioPlayer sẽ được gọi ngưng từ hàm bên dưới)
-    
     adAudio.src = MOCK_AD_SRC;
     adAudio.load();
     
@@ -201,6 +197,36 @@ let musicData = [
     { id: 100, title: "Ước Mơ Của Mẹ", artist: "Quân AP Cover", desc: "Quân AP cover", src: "audio/Nguyễn Hùng/QUÂN A.P - ƯỚC MƠ CỦA MẸ OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60", plays: 2500000, date: "2024-05-20" }
 ];
 
+// --- BỔ SUNG HÀM ĐỒNG BỘ DATABASE CHO SONGS, PLAYLISTS, LISTENING_HISTORY ---
+const API_BASE_URL = window.location.origin.includes('3000') ? '' : 'http://localhost:3000';
+
+function syncSongsToDatabase() {
+    fetch(`${API_BASE_URL}/api/songs/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ songs: musicData })
+    }).catch(err => console.log("Sync songs error:", err));
+}
+
+function syncPlaylistsToDatabase() {
+    const user = localStorage.getItem("user_displayName") || "GuestUser";
+    fetch(`${API_BASE_URL}/api/playlists/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, playlists: playlists })
+    }).catch(err => console.log("Sync playlists error:", err));
+}
+
+function syncHistoryToDatabase(song) {
+    const user = localStorage.getItem("user_displayName") || "GuestUser";
+    fetch(`${API_BASE_URL}/api/history/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, song: song })
+    }).catch(err => console.log("Sync history error:", err));
+}
+// --- KẾT THÚC HÀM ĐỒNG BỘ DB ---
+
 // Đa ngôn ngữ
 const translations = {
     vi: {
@@ -329,12 +355,13 @@ function savePlayHistory(song) {
     recentlyPlayed.unshift(song);
     if (recentlyPlayed.length > 20) recentlyPlayed.pop();
     localStorage.setItem('music_app_recently_played', JSON.stringify(recentlyPlayed));
+    syncHistoryToDatabase(song);
 }
 
 async function checkUserPremiumStatus(username) {
     if (!username) return;
     try {
-        const response = await fetch(`http://localhost:3000/api/user-status/${encodeURIComponent(username)}`);
+        const response = await fetch(`${API_BASE_URL}/api/user-status/${encodeURIComponent(username)}`);
         const data = await response.json();
         if (data.success) {
             userIsPremium = data.is_premium;
@@ -374,6 +401,7 @@ function removeVietnameseAccents(str) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    syncSongsToDatabase();
     changeLanguage(currentLang);
 
     // Xử lý URL chia sẻ playlist
@@ -568,7 +596,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        const response = await fetch('http://localhost:3000/api/upgrade-premium', {
+                        const response = await fetch(`${API_BASE_URL}/api/upgrade-premium`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ username: userName })
@@ -924,11 +952,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Gắn sự kiện khi bài hát phát xong -> Kích hoạt check quảng cáo rồi mới sang bài tiếp theo
     audioPlayer.addEventListener("ended", () => {
-        // Kiểm tra xem có cần phát quảng cáo ngay sau khi nghe xong bài này không
         let adTriggered = checkAndPlayAdOnSongEnd();
         
         if (adTriggered) {
-            // Khi đang phát quảng cáo, ta tạm thời chờ quảng cáo chạy xong rồi mới tự động chuyển bài tiếp theo
             adAudio.onended = () => {
                 finishAdPlayback();
                 proceedToNextSong();
@@ -1055,6 +1081,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     liked.songs.push(item.id);
                 }
                 localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
+                syncPlaylistsToDatabase();
                 renderCards(data);
             });
 
@@ -1149,6 +1176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
         localStorage.setItem(sharedPlaylistsKey, JSON.stringify(sharedPlaylists));
+        syncPlaylistsToDatabase();
     };
 
     window.renderPlaylistView = function(plName, isShared = false) {
@@ -1221,6 +1249,13 @@ document.addEventListener("DOMContentLoaded", () => {
             confirmButtonText: 'Đồng ý xóa'
         }).then((result) => {
             if (result.isConfirmed) {
+                const user = localStorage.getItem("user_displayName") || "GuestUser";
+                fetch(`${API_BASE_URL}/api/playlists/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, name: plName })
+                }).catch(err => console.log(err));
+
                 playlists = playlists.filter(p => p.name !== plName);
                 renderSidebarPlaylists();
                 document.getElementById("main-section-title").innerText = translations[currentLang].section_featured;
@@ -1294,6 +1329,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (!inPl) {
                         pl.songs.push(song.id);
                         localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
+                        syncPlaylistsToDatabase();
                         renderSongListForModal(removeVietnameseAccents(searchInputEl.value.trim()));
                         renderPlaylistView(plName);
                         Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: `Đã thêm "${song.title}"`, showConfirmButton: false, timer: 1000 });

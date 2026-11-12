@@ -42,6 +42,50 @@ const db = new sqlite3.Database(dbFile, (err) => {
                 console.log("Đã sẵn sàng bảng Users trong SQLite.");
             }
         });
+
+        // --- BỔ SUNG CÁC BẢNG DATABASE MỚI (SONGS, PLAYLISTS, PLAYLIST_SONGS, LISTENING_HISTORY) ---
+        db.run(`CREATE TABLE IF NOT EXISTS Songs (
+            id INTEGER PRIMARY KEY,
+            title TEXT NOT NULL,
+            artist TEXT NOT NULL,
+            desc TEXT,
+            src TEXT NOT NULL,
+            cover TEXT,
+            plays INTEGER DEFAULT 0,
+            date TEXT
+        )`, (err) => {
+            if (!err) console.log("Đã sẵn sàng bảng Songs trong SQLite.");
+        });
+
+        db.run(`CREATE TABLE IF NOT EXISTS Playlists (
+            id TEXT PRIMARY KEY,
+            username TEXT NOT NULL,
+            name TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => {
+            if (!err) console.log("Đã sẵn sàng bảng Playlists trong SQLite.");
+        });
+
+        db.run(`CREATE TABLE IF NOT EXISTS Playlist_Songs (
+            playlist_id TEXT NOT NULL,
+            song_id INTEGER NOT NULL,
+            added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (playlist_id, song_id)
+        )`, (err) => {
+            if (!err) console.log("Đã sẵn sàng bảng Playlist_Songs trong SQLite.");
+        });
+
+        db.run(`CREATE TABLE IF NOT EXISTS Listening_History (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            song_id INTEGER NOT NULL,
+            song_title TEXT,
+            artist TEXT,
+            listened_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => {
+            if (!err) console.log("Đã sẵn sàng bảng Listening_History trong SQLite.");
+        });
+        // --- KẾT THÚC KHỞI TẠO CÁC BẢNG MỚI ---
     }
 });
 
@@ -174,6 +218,107 @@ app.post('/api/admin/update-user-status', (req, res) => {
             return res.status(404).json({ success: false, message: "Không tìm thấy người dùng!" });
         }
         res.json({ success: true, message: "Cập nhật trạng thái thành công!" });
+    });
+});
+
+// --- BỔ SUNG CÁC API CHO BẢNG SONGS, PLAYLISTS, PLAYLIST_SONGS, LISTENING_HISTORY ---
+
+// 1. Đồng bộ toàn bộ 100 bài hát từ Frontend vào bảng Songs nếu bảng trống
+app.post('/api/songs/sync', (req, res) => {
+    const { songs } = req.body;
+    if (!songs || !Array.isArray(songs)) {
+        return res.status(400).json({ success: false, message: "Dữ liệu bài hát không hợp lệ!" });
+    }
+    db.get(`SELECT COUNT(*) AS count FROM Songs`, [], (err, row) => {
+        if (err) return res.status(500).json({ success: false });
+        if (row && row.count === 0) {
+            const stmt = db.prepare(`INSERT OR IGNORE INTO Songs (id, title, artist, desc, src, cover, plays, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+            songs.forEach(s => {
+                stmt.run(s.id, s.title, s.artist, s.desc || s.artist, s.src, s.cover, s.plays || 0, s.date || '2024-01-01');
+            });
+            stmt.finalize();
+            console.log(`Đã nạp tự động ${songs.length} bài hát vào bảng Songs!`);
+        }
+        res.json({ success: true });
+    });
+});
+
+// Lấy danh sách bài hát từ DB (Phục vụ Admin & Frontend)
+app.get('/api/songs', (req, res) => {
+    db.all(`SELECT * FROM Songs ORDER BY id ASC`, [], (err, rows) => {
+        if (err) return res.status(500).json({ success: false, message: "Lỗi truy vấn bảng Songs" });
+        res.json({ success: true, songs: rows });
+    });
+});
+
+// 2. Đồng bộ Playlists và Playlist_Songs
+app.post('/api/playlists/sync', (req, res) => {
+    const { username, playlists } = req.body;
+    if (!username || !Array.isArray(playlists)) {
+        return res.status(400).json({ success: false });
+    }
+    db.serialize(() => {
+        playlists.forEach(pl => {
+            const plId = pl.id || `${username}_${pl.name}`;
+            db.run(`INSERT OR REPLACE INTO Playlists (id, username, name) VALUES (?, ?, ?)`, [plId, username, pl.name]);
+            db.run(`DELETE FROM Playlist_Songs WHERE playlist_id = ?`, [plId]);
+            if (Array.isArray(pl.songs)) {
+                const stmt = db.prepare(`INSERT OR IGNORE INTO Playlist_Songs (playlist_id, song_id) VALUES (?, ?)`);
+                pl.songs.forEach(songId => {
+                    stmt.run(plId, songId);
+                });
+                stmt.finalize();
+            }
+        });
+    });
+    res.json({ success: true });
+});
+
+// Xóa playlist khỏi DB
+app.post('/api/playlists/delete', (req, res) => {
+    const { username, name } = req.body;
+    db.all(`SELECT id FROM Playlists WHERE username = ? AND name = ?`, [username, name], (err, rows) => {
+        if (!err && rows) {
+            rows.forEach(r => {
+                db.run(`DELETE FROM Playlist_Songs WHERE playlist_id = ?`, [r.id]);
+            });
+            db.run(`DELETE FROM Playlists WHERE username = ? AND name = ?`, [username, name]);
+        }
+        res.json({ success: true });
+    });
+});
+
+// 3. Lưu lịch sử nghe nhạc vào bảng Listening_History & tăng lượt nghe Songs
+app.post('/api/history/add', (req, res) => {
+    const { username, song } = req.body;
+    if (!username || !song) return res.status(400).json({ success: false });
+
+    db.run(`INSERT INTO Listening_History (username, song_id, song_title, artist) VALUES (?, ?, ?, ?)`,
+        [username, song.id, song.title, song.artist],
+        (err) => {
+            if (err) console.error("Lỗi lưu Listening_History:", err);
+        }
+    );
+    db.run(`UPDATE Songs SET plays = plays + 1 WHERE id = ?`, [song.id]);
+    res.json({ success: true });
+});
+
+// Lấy dữ liệu lịch sử nghe cho Admin kiểm tra
+app.get('/api/admin/history', (req, res) => {
+    db.all(`SELECT * FROM Listening_History ORDER BY id DESC LIMIT 100`, [], (err, rows) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true, history: rows });
+    });
+});
+
+// Lấy dữ liệu Playlists & số bài hát cho Admin kiểm tra
+app.get('/api/admin/playlists', (req, res) => {
+    db.all(`SELECT p.id, p.username, p.name, p.created_at, COUNT(ps.song_id) AS song_count 
+            FROM Playlists p 
+            LEFT JOIN Playlist_Songs ps ON p.id = ps.playlist_id 
+            GROUP BY p.id ORDER BY p.created_at DESC`, [], (err, rows) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true, playlists: rows });
     });
 });
 
