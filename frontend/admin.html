@@ -2,159 +2,29 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Trị Hệ Thống - Music App</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Admin Dashboard</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="admin.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #7494ec; color: #fff; }
+        .btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; color: #fff; }
+        .btn-toggle { background: #ffa502; }
+        .btn-logout { background: #ff4757; float: right; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-    <div class="admin-container">
-        <header class="admin-header">
-            <div class="header-title">
-                <i class='bx bxs-dashboard'></i>
-                <h2>Bảng Quản Trị Hệ Thống (Admin Dashboard)</h2>
-            </div>
-            <div class="header-actions">
-                <button id="refresh-btn" class="btn btn-secondary">
-                    <i class='bx bx-refresh'></i> Tải lại dữ liệu
-                </button>
-                <a href="home.html" class="btn btn-outline">
-                    <i class='bx bx-home-alt'></i> Về trang chủ
-                </a>
-            </div>
-        </header>
-
-        <section class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon icon-users"><i class='bx bxs-user-detail'></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Tổng người dùng</span>
-                    <h3 id="stat-total-users">0</h3>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-free"><i class='bx bxs-user'></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Tài khoản Free</span>
-                    <h3 id="stat-free-users">0</h3>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-premium"><i class='bx bxs-star'></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Tài khoản Premium</span>
-                    <h3 id="stat-premium-users">0</h3>
-                </div>
-            </div>
-        </section>
-
-        <!-- Thanh chuyển đổi giữa các bảng Database -->
-        <div class="admin-tabs">
-            <button class="admin-tab-btn active" data-target="tab-users"><i class='bx bxs-user-account'></i> Bảng Users</button>
-            <button class="admin-tab-btn" data-target="tab-songs"><i class='bx bxs-music'></i> Bảng Songs (<span id="songs-count-badge">0</span>)</button>
-            <button class="admin-tab-btn" data-target="tab-playlists"><i class='bx bxs-playlist'></i> Bảng Playlists & Playlist_Songs</button>
-            <button class="admin-tab-btn" data-target="tab-history"><i class='bx bx-history'></i> Bảng Listening_History</button>
-        </div>
-
-        <!-- Tab 1: Bảng Users (Giữ nguyên 100%) -->
-        <section class="table-section admin-tab-content" id="tab-users">
-            <div class="table-header">
-                <h3><i class='bx bx-table'></i> Danh sách người dùng từ Database (SQLite)</h3>
-                <div class="search-box">
-                    <i class='bx bx-search'></i>
-                    <input type="text" id="admin-search-input" placeholder="Tìm theo username hoặc email...">
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên đăng nhập (Username)</th>
-                            <th>Email</th>
-                            <th>Loại tài khoản</th>
-                            <th>Ngày đăng ký</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-table-body">
-                        <!-- Dữ liệu render động -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Tab 2: Bảng Songs -->
-        <section class="table-section admin-tab-content" id="tab-songs" style="display: none;">
-            <div class="table-header">
-                <h3><i class='bx bx-music'></i> Kho bài hát lưu trong Database (Bảng Songs)</h3>
-                <div class="search-box">
-                    <i class='bx bx-search'></i>
-                    <input type="text" id="admin-search-song" placeholder="Tìm bài hát hoặc ca sĩ...">
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên bài hát</th>
-                            <th>Ca sĩ</th>
-                            <th>Đường dẫn file MP3 (src)</th>
-                            <th>Lượt nghe</th>
-                        </tr>
-                    </thead>
-                    <tbody id="song-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Tab 3: Bảng Playlists & Playlist_Songs -->
-        <section class="table-section admin-tab-content" id="tab-playlists" style="display: none;">
-            <div class="table-header">
-                <h3><i class='bx bxs-playlist'></i> Danh sách Playlist & Số lượng bài hát (Bảng Playlists + Playlist_Songs)</h3>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID Playlist</th>
-                            <th>Người tạo (Username)</th>
-                            <th>Tên Playlist</th>
-                            <th>Số bài hát đã lưu</th>
-                            <th>Ngày tạo</th>
-                        </tr>
-                    </thead>
-                    <tbody id="playlist-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Tab 4: Bảng Listening_History -->
-        <section class="table-section admin-tab-content" id="tab-history" style="display: none;">
-            <div class="table-header">
-                <h3><i class='bx bx-history'></i> Nhật ký nghe nhạc của người dùng (Bảng Listening_History)</h3>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Người nghe (Username)</th>
-                            <th>ID Bài hát</th>
-                            <th>Tên bài hát</th>
-                            <th>Ca sĩ</th>
-                            <th>Thời gian nghe</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
+    <button class="btn btn-logout" onclick="logout()">Đăng xuất</button>
+    <h2>Quản lý người dùng</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th><th>Username</th><th>Email</th><th>Xác thực</th><th>Gói</th><th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="user-table-body"></tbody>
+    </table>
     <script src="admin.js"></script>
 </body>
 </html>

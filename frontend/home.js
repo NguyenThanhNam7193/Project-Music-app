@@ -1,100 +1,4 @@
-let playlists = JSON.parse(localStorage.getItem('music_app_playlists')) || [
-    { name: "Bài hát đã thích", songs: [1, 3, 11] }
-];
-
-const currentUsername = localStorage.getItem('user_displayName') || 'GuestUser';
-const isLoggedIn = localStorage.getItem("user_email") !== null; 
-let sharedPlaylistsKey = `music_app_shared_playlists_${currentUsername}`;
-let sharedPlaylists = JSON.parse(localStorage.getItem(sharedPlaylistsKey)) || [];
-
-let globalPublicPlaylists = JSON.parse(localStorage.getItem('music_app_global_public_playlists')) || {};
-
-// --- KHỐI LOGIC QUẢN LÝ QUẢNG CÁO MỚI THÊM ---
-let adState = JSON.parse(localStorage.getItem('music_app_ad_state')) || {
-    totalSongsPlayed: 0,
-    adsTriggeredCount: 0,
-    lastAdTimestamp: Date.now()
-};
-
-const adAudio = new Audio();
-let isPlayingAd = false;
-const MOCK_AD_SRC = "audio/QuanCaoDemo.m4a";
-
-function checkAndPlayAdOnSongEnd() {
-    if (userIsPremium) return false;
-
-    adState.totalSongsPlayed++;
-    localStorage.setItem('music_app_ad_state', JSON.stringify(adState));
-
-    let shouldTriggerAd = false;
-    let now = Date.now();
-    let elapsedMinutes = (now - adState.lastAdTimestamp) / (1000 * 60);
-
-    // Tính hệ số tăng thời gian: cứ 20 bài thì tăng thêm 10 phút (15 + 10 * n)
-    let n = Math.floor(adState.totalSongsPlayed / 20);
-    let requiredIntervalMinutes = 15 + (n * 10);
-
-    if (adState.adsTriggeredCount === 0 && adState.totalSongsPlayed >= 1) {
-        // Quảng cáo đầu tiên phát ngay sau khi nghe xong bài hát đầu tiên
-        shouldTriggerAd = true;
-    } else if (elapsedMinutes >= requiredIntervalMinutes) {
-        // Các quảng cáo tiếp theo theo chu kỳ thời gian
-        shouldTriggerAd = true;
-    }
-
-    if (shouldTriggerAd) {
-        triggerMandatoryAd();
-        return true;
-    }
-    return false;
-}
-
-function triggerMandatoryAd() {
-    isPlayingAd = true;
-    adAudio.src = MOCK_AD_SRC;
-    adAudio.load();
-    
-    Swal.fire({
-        title: 'Đang phát quảng cáo',
-        text: 'Vui lòng nghe hết quảng cáo để tiếp tục thưởng thức âm nhạc.',
-        icon: 'info',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showConfirmButton: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    adAudio.play().catch(err => {
-        console.log("Không tìm thấy file audio quảng cáo, tự động giả lập kết thúc sau 5s:", err);
-        setTimeout(() => finishAdPlayback(), 5000);
-    });
-
-    adAudio.onended = () => {
-        finishAdPlayback();
-    };
-}
-
-function finishAdPlayback() {
-    isPlayingAd = false;
-    adState.adsTriggeredCount++;
-    adState.lastAdTimestamp = Date.now();
-    localStorage.setItem('music_app_ad_state', JSON.stringify(adState));
-    
-    Swal.close();
-    Swal.fire({
-        icon: 'success',
-        title: 'Quảng cáo đã kết thúc',
-        text: 'Tiếp tục phát nhạc của bạn!',
-        timer: 1500,
-        showConfirmButton: false
-    });
-}
-// --- KẾT THÚC KHỐI LOGIC QUẢNG CÁO ---
-
-// ĐÃ KHÔI PHỤC ĐẦY ĐỦ 100 BÀI HÁT GỐC CỦA BẠN
-let musicData = [
+let musicDataSync = [
     { id: 1, title: "Em Của Ngày Hôm Qua", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Sơn Tùng M-TP - Em Của Ngày Hôm Qua.mp3", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=60", plays: 1500000, date: "2024-01-01" },
     { id: 2, title: "Chắc Ai Đó Sẽ Về", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Sơn Tùng M-TP - Chắc Ai Đó Sẽ Về.mp3", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=60", plays: 1200000, date: "2024-01-05" },
     { id: 3, title: "Nơi Này Có Anh", artist: "Sơn Tùng M-TP", desc: "Sơn Tùng M-TP", src: "audio/sontung/Sơn Tùng MTP - Nơi Này Có Anh (Việt Nam Lyrics Subtitles).mp3", cover: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=300&auto=format&fit=crop&q=60", plays: 2500000, date: "2024-02-10" },
@@ -197,1236 +101,772 @@ let musicData = [
     { id: 100, title: "Ước Mơ Của Mẹ", artist: "Quân AP Cover", desc: "Quân AP cover", src: "audio/Nguyễn Hùng/QUÂN A.P - ƯỚC MƠ CỦA MẸ OFFICIAL MV.mp3", cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=60", plays: 2500000, date: "2024-05-20" }
 ];
 
-// --- BỔ SUNG HÀM ĐỒNG BỘ DATABASE CHO SONGS, PLAYLISTS, LISTENING_HISTORY ---
-const API_BASE_URL = window.location.origin.includes('3000') ? '' : 'http://localhost:3000';
-
-function syncSongsToDatabase() {
-    fetch(`${API_BASE_URL}/api/songs/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ songs: musicData })
-    }).catch(err => console.log("Sync songs error:", err));
-}
-
-function syncPlaylistsToDatabase() {
-    const user = localStorage.getItem("user_displayName") || "GuestUser";
-    fetch(`${API_BASE_URL}/api/playlists/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: user, playlists: playlists })
-    }).catch(err => console.log("Sync playlists error:", err));
-}
-
-function syncHistoryToDatabase(song) {
-    const user = localStorage.getItem("user_displayName") || "GuestUser";
-    fetch(`${API_BASE_URL}/api/history/add`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: user, song: song })
-    }).catch(err => console.log("Sync history error:", err));
-}
-// --- KẾT THÚC HÀM ĐỒNG BỘ DB ---
-
-// Đa ngôn ngữ
-const translations = {
-    vi: {
-        app_title: "Music App - Trang Chủ",
-        nav_home: "Trang chủ",
-        nav_library: "Thư viện",
-        nav_playlist: "PLAYLIST",
-        nav_create_playlist: "Tạo playlist",
-        nav_liked_songs: "Bài hát đã thích",
-        menu_profile: "Trang cá nhân",
-        menu_history: "Nhạc nghe gần đây",
-        menu_upgrade: "Nâng cấp Premium",
-        menu_language: "Ngôn ngữ",
-        menu_logout: "Đăng xuất",
-        btn_upgrade: "Nâng cấp Premium ⭐",
-        tab_explore: "Khám phá",
-        tab_popular: "Phổ biến",
-        tab_latest: "Mới nhất",
-        tab_trending: "Thịnh hành",
-        banner_tag: "Nghệ sĩ nổi bật",
-        banner_desc: "Khám phá các ca khúc hit mới nhất được yêu thích tuần này.",
-        banner_btn: "Phát ngay",
-        section_featured: "Bài hát nổi bật",
-        widget_vip: "TÀI KHOẢN VIP",
-        widget_experience: "Trải nghiệm Premium",
-        widget_desc: "Nghe nhạc chất lượng cao, không quảng cáo gián đoạn.",
-        widget_btn: "Nâng cấp ngay",
-        friends_listening: "Bạn bè đang nghe",
-        player_select: "Chọn một bài hát",
-        player_artist: "Ca sĩ",
-        modal_create_pl: "Tạo playlist mới",
-        btn_cancel: "Hủy",
-        btn_create: "Tạo",
-        btn_close: "Đóng",
-        btn_save: "Lưu thay đổi",
-        profile_title: "Thông tin cá nhân",
-        profile_name: "Họ và tên / Username",
-        history_title: "Nhạc nghe gần đây",
-        prem_modal_title: "Nâng cấp tài khoản Premium",
-        prem_modal_subtitle: "Chọn gói đăng ký phù hợp với bạn để trải nghiệm âm nhạc đỉnh cao.",
-        pkg_1_name: "Gói 1 tháng",
-        pkg_1_desc: "Thời hạn 30 ngày",
-        pkg_2_name: "Gói 3 tháng (Phổ biến)",
-        pkg_2_desc: "Thời hạn 90 ngày",
-        pkg_3_name: "Gói 1 năm (Tiết kiệm)",
-        pkg_3_desc: "Thời hạn 365 ngày",
-        btn_confirm_pay: "Xác nhận thanh toán (DEMO)",
-        demo_notice: "* Đây là giao dịch mô phỏng (DEMO), không trừ tiền thật qua ngân hàng."
-    },
-    en: {
-        app_title: "Music App - Home",
-        nav_home: "Home",
-        nav_library: "Library",
-        nav_playlist: "PLAYLIST",
-        nav_create_playlist: "Create playlist",
-        nav_liked_songs: "Liked songs",
-        menu_profile: "Profile",
-        menu_history: "Recently Played",
-        menu_upgrade: "Upgrade Premium",
-        menu_language: "Language",
-        menu_logout: "Logout",
-        btn_upgrade: "Upgrade Premium ⭐",
-        tab_explore: "Explore",
-        tab_popular: "Popular",
-        tab_latest: "Latest",
-        tab_trending: "Trending",
-        banner_tag: "Featured Artist",
-        banner_desc: "Discover the latest trending hits this week.",
-        banner_btn: "Play Now",
-        section_featured: "Featured Songs",
-        widget_vip: "VIP ACCOUNT",
-        widget_experience: "Premium Experience",
-        widget_desc: "High quality audio, ad-free listening.",
-        widget_btn: "Upgrade Now",
-        friends_listening: "Friends are listening",
-        player_select: "Select a song",
-        player_artist: "Artist",
-        modal_create_pl: "Create new playlist",
-        btn_cancel: "Cancel",
-        btn_create: "Create",
-        btn_close: "Close",
-        btn_save: "Save changes",
-        profile_title: "Personal Profile",
-        profile_name: "Full Name / Username",
-        history_title: "Recently Played",
-        prem_modal_title: "Upgrade to Premium",
-        prem_modal_subtitle: "Choose a subscription plan that suits you.",
-        pkg_1_name: "1 Month Plan",
-        pkg_1_desc: "30 days access",
-        pkg_2_name: "3 Months Plan (Popular)",
-        pkg_2_desc: "90 days access",
-        pkg_3_name: "1 Year Plan (Best Value)",
-        pkg_3_desc: "365 days access",
-        btn_confirm_pay: "Confirm Payment (DEMO)",
-        demo_notice: "* This is a simulated transaction (DEMO), no real money is charged."
-    }
-};
-
-let currentLang = localStorage.getItem('music_app_lang') || 'vi';
-
-function changeLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem('music_app_lang', lang);
-    const langLabel = document.getElementById('current-lang-label');
-    if (langLabel) langLabel.innerText = lang.toUpperCase();
-    
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-            el.innerText = translations[lang][key];
-        }
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (translations[lang][key]) {
-            el.placeholder = translations[lang][key];
-        }
-    });
-}
-
-let userIsPremium = false;
+let musicData = [];
+let currentPage = 1;
+let currentSearch = "";
+let currentMood = "";
+let playlists = JSON.parse(localStorage.getItem('music_app_playlists')) || [{ id: 'pl_liked', name: "Bài hát đã thích", songs: [1, 3, 11] }];
+const currentUsername = localStorage.getItem('user_displayName') || 'GuestUser';
 let recentlyPlayed = JSON.parse(localStorage.getItem('music_app_recently_played')) || [];
+let userIsPremium = false;
 
-function savePlayHistory(song) {
-    recentlyPlayed = recentlyPlayed.filter(s => s.id !== song.id);
-    recentlyPlayed.unshift(song);
-    if (recentlyPlayed.length > 20) recentlyPlayed.pop();
-    localStorage.setItem('music_app_recently_played', JSON.stringify(recentlyPlayed));
-    syncHistoryToDatabase(song);
+let activePlaylistId = null;
+let selectedMoodValue = "";
+let sharedPlaylistPayload = null;
+
+function hasShareQueryParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.has("share") || urlParams.has("sharedPlaylist");
 }
 
-async function checkUserPremiumStatus(username) {
-    if (!username) return;
+function isGuestUser() {
+    if (hasShareQueryParam()) {
+        return true;
+    }
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    return !loggedIn;
+}
+
+function promptGuestLogin() {
+    Swal.fire({
+        title: "Bạn cần đăng nhập / đăng ký",
+        text: "Vui lòng đăng nhập hoặc đăng ký để sử dụng tính năng này.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Đăng nhập / Đăng ký",
+        cancelButtonText: "Đóng",
+        confirmButtonColor: "#7494ec"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "SignUp_Login_Form.html";
+        }
+    });
+}
+
+function parseSharedPlaylistFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const raw = urlParams.get("share") || urlParams.get("sharedPlaylist");
+    if (!raw) return null;
     try {
-        const response = await fetch(`${API_BASE_URL}/api/user-status/${encodeURIComponent(username)}`);
-        const data = await response.json();
-        if (data.success) {
-            userIsPremium = data.is_premium;
-            const badgeEl = document.getElementById("account-badge");
-            const upgradeBtn = document.getElementById("upgrade-premium-btn");
-            const sidebarUpgradeBtn = document.getElementById("sidebar-upgrade-btn");
-            
-            if (userIsPremium) {
-                if (badgeEl) {
-                    badgeEl.innerText = "PREMIUM ⭐";
-                    badgeEl.style.color = "#2ed573";
-                    badgeEl.style.background = "#e8f8f0";
-                }
-                if (upgradeBtn) upgradeBtn.style.display = "none";
-                if (sidebarUpgradeBtn && sidebarUpgradeBtn.parentElement) sidebarUpgradeBtn.parentElement.style.display = "none";
-            } else {
-                if (badgeEl) {
-                    badgeEl.innerText = "FREE";
-                    badgeEl.style.color = "#ff4757";
-                    badgeEl.style.background = "#ffebee";
-                }
-                if (upgradeBtn) upgradeBtn.style.display = "block";
+        const decoded = decodeURIComponent(raw);
+        const parsed = JSON.parse(decoded);
+        if (parsed && Array.isArray(parsed.songs)) {
+            return parsed;
+        }
+    } catch (e) {
+        console.log("Lỗi đọc link chia sẻ:", e);
+    }
+    return null;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    sharedPlaylistPayload = parseSharedPlaylistFromUrl();
+
+    if (!sharedPlaylistPayload && !hasShareQueryParam() && localStorage.getItem("isLoggedIn") !== "true") {
+        window.location.href = "SignUp_Login_Form.html";
+        return;
+    }
+
+    await syncSongsToDatabase();
+    await fetchSongs();
+    if (!isGuestUser()) {
+        await checkUserPremiumStatus(currentUsername);
+    }
+    initUI();
+
+    if (sharedPlaylistPayload && isGuestUser()) {
+        const sharedSongs = musicDataSync.filter(s => sharedPlaylistPayload.songs.includes(s.id));
+        if (sharedSongs.length > 0) {
+            const combined = [...sharedSongs, ...musicData.filter(s => !sharedPlaylistPayload.songs.includes(s.id))];
+            renderCards(combined);
+        }
+    }
+});
+
+async function syncSongsToDatabase() {
+    if (musicDataSync.length === 0) return;
+    try {
+        await fetch('http://localhost:3000/api/songs/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ songs: musicDataSync })
+        });
+    } catch (err) { console.log("Lỗi sync:", err); }
+}
+
+function removeDiacritics(str = "") {
+    return str
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D")
+        .toLowerCase();
+}
+
+function getOrCreateSearchDropdown() {
+    const searchInput = document.getElementById("search-input-main");
+    if (!searchInput) return null;
+    const searchBar = searchInput.closest(".search-bar");
+    if (!searchBar) return null;
+
+    if (!searchBar.style.position) {
+        searchBar.style.position = "relative";
+    }
+
+    let dropdown = document.getElementById("search-dropdown-list");
+    if (!dropdown) {
+        dropdown = document.createElement("div");
+        dropdown.id = "search-dropdown-list";
+        dropdown.style = "display: none; position: absolute; top: calc(100% + 6px); left: 0; width: 100%; max-height: 300px; overflow-y: auto; background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); z-index: 1001; border: 1px solid #eee;";
+        searchBar.appendChild(dropdown);
+
+        document.addEventListener("click", (e) => {
+            if (!searchBar.contains(e.target)) {
+                dropdown.style.display = "none";
             }
+        });
+    }
+    return dropdown;
+}
+
+function renderSearchDropdown(keyword) {
+    const dropdown = getOrCreateSearchDropdown();
+    if (!dropdown) return;
+
+    const trimmed = keyword.trim();
+    if (!trimmed) {
+        dropdown.style.display = "none";
+        dropdown.innerHTML = "";
+        return;
+    }
+
+    const cleanQuery = removeDiacritics(trimmed);
+    const sourceList = musicDataSync;
+    const matched = sourceList.filter(s =>
+        removeDiacritics(s.title).includes(cleanQuery) ||
+        removeDiacritics(s.artist).includes(cleanQuery) ||
+        s.title.toLowerCase().includes(trimmed.toLowerCase()) ||
+        s.artist.toLowerCase().includes(trimmed.toLowerCase())
+    ).slice(0, 8);
+
+    if (matched.length === 0) {
+        dropdown.innerHTML = `<div style="padding: 12px 14px; font-size: 13px; color: #777;">Không tìm thấy bài hát nào.</div>`;
+        dropdown.style.display = "block";
+        return;
+    }
+
+    dropdown.innerHTML = matched.map((song, idx) => `
+        <div class="search-dropdown-item" data-index="${idx}" style="display: flex; align-items: center; gap: 10px; padding: 8px 14px; cursor: pointer; border-bottom: 1px solid #f4f4f4;">
+            <img src="${song.cover}" alt="Cover" style="width: 36px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0;">
+            <div style="min-width: 0; flex: 1;">
+                <div style="font-size: 13px; font-weight: 600; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${song.title}</div>
+                <div style="font-size: 11.5px; color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${song.artist}</div>
+            </div>
+        </div>
+    `).join("");
+
+    dropdown.querySelectorAll(".search-dropdown-item").forEach((el, idx) => {
+        el.addEventListener("mouseenter", () => {
+            el.style.background = "#f0f4ff";
+        });
+        el.addEventListener("mouseleave", () => {
+            el.style.background = "#ffffff";
+        });
+        el.addEventListener("click", () => {
+            loadAndPlaySong(matched, idx);
+            dropdown.style.display = "none";
+        });
+    });
+
+    dropdown.style.display = "block";
+}
+
+document.getElementById("search-input-main")?.addEventListener("input", (e) => {
+    currentSearch = e.target.value.trim();
+    renderSearchDropdown(e.target.value);
+    fetchSongs(1, currentSearch, currentMood);
+});
+
+document.getElementById("search-input-main")?.addEventListener("focus", (e) => {
+    if (e.target.value.trim()) {
+        renderSearchDropdown(e.target.value);
+    }
+});
+
+async function fetchSongs(page = 1, search = "", mood = "") {
+    try {
+        const cleanQuery = removeDiacritics(search);
+        const res = await fetch(`http://localhost:3000/api/songs?page=${page}&limit=20&search=${encodeURIComponent(search)}&mood=${encodeURIComponent(mood)}`);
+        const data = await res.json();
+        if (data.success) {
+            let list = data.songs || [];
+            if (cleanQuery && list.length === 0) {
+                list = musicDataSync.filter(s =>
+                    removeDiacritics(s.title).includes(cleanQuery) ||
+                    removeDiacritics(s.artist).includes(cleanQuery)
+                );
+            }
+            musicData = list;
+            currentPage = data.pagination?.page || 1;
+            renderCards(musicData);
+            renderPagination(data.pagination?.totalPages || 1, currentPage);
         }
     } catch (err) {
-        console.error("Không thể lấy trạng thái Premium từ DB:", err);
-    }
-}
-
-// Hàm chuẩn hóa tiếng Việt bỏ dấu
-function removeVietnameseAccents(str) {
-    if (!str) return "";
-    return str.normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .replace(/đ/g, 'd').replace(/Đ/g, 'D')
-              .toLowerCase();
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    syncSongsToDatabase();
-    changeLanguage(currentLang);
-
-    // Xử lý URL chia sẻ playlist
-    const urlParams = new URLSearchParams(window.location.search);
-    const sharedId = urlParams.get('shared_playlist_id');
-
-    if (sharedId && globalPublicPlaylists[sharedId]) {
-        const targetPl = globalPublicPlaylists[sharedId];
-        
-        if (!isLoggedIn) {
-            const mainSectionTitle = document.getElementById("main-section-title");
-            const discoverTabs = document.querySelector(".discover-tabs");
-            const heroBanner = document.getElementById("hero-banner-section");
-            
-            if (discoverTabs) discoverTabs.style.display = "none";
-            if (heroBanner) heroBanner.style.display = "none";
-            if (mainSectionTitle) mainSectionTitle.innerText = `Playlist chia sẻ: ${targetPl.name} (Chế độ Khách)`;
-
-            const plSongs = musicData.filter(s => targetPl.songs.includes(s.id));
-            setTimeout(() => {
-                renderCards(plSongs);
-            }, 100);
-
-            window.loadAndPlaySong = function(list, index) {
-                Swal.fire({
-                    title: 'Yêu cầu tài khoản',
-                    html: 'Bạn đang xem playlist chia sẻ với tư cách khách.<br>Vui lòng đăng nhập hoặc đăng ký tài khoản để nghe trọn vẹn và sử dụng đầy đủ tính năng!<br><br><a href="SignUp_Login_Form.html" style="color: #7494ec; font-weight: 600; text-decoration: underline;">Đăng nhập / Đăng ký ngay</a>',
-                    icon: 'info',
-                    confirmButtonColor: '#7494ec',
-                    confirmButtonText: 'Đóng'
-                });
-            };
-        } else {
-            if (!sharedPlaylists.some(p => p.id === sharedId)) {
-                sharedPlaylists.push(targetPl);
-                localStorage.setItem(sharedPlaylistsKey, JSON.stringify(sharedPlaylists));
-            }
-            window.history.replaceState({}, document.title, window.location.pathname);
+        console.error(err);
+        if (search) {
+            const cleanQuery = removeDiacritics(search);
+            musicData = musicDataSync.filter(s =>
+                removeDiacritics(s.title).includes(cleanQuery) ||
+                removeDiacritics(s.artist).includes(cleanQuery)
+            );
+            renderCards(musicData);
         }
     }
+}
 
-    // Thu gọn Sidebar
-    const toggleLibraryBtn = document.getElementById("toggle-library-btn");
-    if (toggleLibraryBtn) {
-        toggleLibraryBtn.addEventListener("click", (e) => {
+function renderCards(data) {
+    const cardGrid = document.querySelector(".card-grid");
+    if (!cardGrid) return;
+    cardGrid.innerHTML = "";
+
+    if (data.length === 0) {
+        cardGrid.innerHTML = `<p style="color: #666; grid-column: 1/-1;">Không tìm thấy bài hát nào.</p>`;
+        return;
+    }
+
+    const likedPl = playlists.find(p => p.name === "Bài hát đã thích");
+    const isCustomPlaylistView = !!(activePlaylistId && activePlaylistId !== 'pl_liked');
+
+    data.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        const isLiked = likedPl && likedPl.songs.includes(item.id);
+
+        card.innerHTML = `
+            <div class="card-img" style="overflow: hidden; cursor: pointer; position: relative;">
+                <img src="${item.cover}" style="width: 100%; height: 100%; object-fit: cover;" alt="Cover">
+                ${isCustomPlaylistView ? `
+                    <button class="remove-from-pl-btn" data-songid="${item.id}" title="Xóa bài hát khỏi playlist" style="position: absolute; top: 8px; right: 8px; background: rgba(255,71,87,0.88); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff;">
+                        <i class='bx bx-trash' style="font-size: 15px;"></i>
+                    </button>
+                ` : ''}
+                <button class="like-btn" data-songid="${item.id}" style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <i class='bx ${isLiked ? 'bxs-heart' : 'bx-heart'}' style="font-size: 18px; color: ${isLiked ? '#ff4757' : '#fff'};"></i>
+                </button>
+            </div>
+            <div class="card-title">${item.title}</div>
+            <div class="card-desc">${item.artist}</div>
+        `;
+
+        card.querySelector(".card-img img").addEventListener("click", () => loadAndPlaySong(data, index));
+        card.querySelector(".card-title").addEventListener("click", () => loadAndPlaySong(data, index));
+
+        card.querySelector(".like-btn").addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (isGuestUser()) return promptGuestLogin();
+            let liked = playlists.find(p => p.name === "Bài hát đã thích");
+            if (!liked) { liked = { id: 'pl_liked', name: "Bài hát đã thích", songs: [] }; playlists.push(liked); }
+            const idx = liked.songs.indexOf(item.id);
+            if (idx > -1) liked.songs.splice(idx, 1); else liked.songs.push(item.id);
+            localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
+            renderCards(data);
+        });
+
+        if (isCustomPlaylistView) {
+            card.querySelector(".remove-from-pl-btn")?.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (isGuestUser()) return promptGuestLogin();
+                const pl = playlists.find(p => p.id === activePlaylistId);
+                if (!pl) return;
+                pl.songs = pl.songs.filter(id => id !== item.id);
+                localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
+                const updatedSongs = musicDataSync.filter(s => pl.songs.includes(s.id));
+                renderCards(updatedSongs);
+            });
+        }
+
+        cardGrid.appendChild(card);
+    });
+}
+
+function renderPagination(totalPages, page) {
+    let pagContainer = document.getElementById("pagination-controls");
+    if (!pagContainer) {
+        pagContainer = document.createElement("div");
+        pagContainer.id = "pagination-controls";
+        pagContainer.style = "display: flex; justify-content: center; gap: 10px; margin-top: 30px; margin-bottom: 100px;";
+        document.querySelector(".main-feed-column").appendChild(pagContainer);
+    }
+    pagContainer.innerHTML = "";
+    if (totalPages <= 1) return;
+
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i;
+        btn.style = `padding: 5px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; background: ${i === page ? '#7494ec' : '#fff'}; color: ${i === page ? '#fff' : '#333'}; box-shadow: 0 2px 5px rgba(0,0,0,0.1);`;
+        btn.onclick = () => fetchSongs(i, currentSearch, currentMood);
+        pagContainer.appendChild(btn);
+    }
+}
+
+let currentPlaylist = [];
+let currentIndex = 0;
+let isShuffle = false;
+let repeatMode = 0;
+const audioPlayer = new Audio();
+
+function initUI() {
+    const playPauseBtn = document.getElementById("play-pause-btn");
+    if (playPauseBtn) playPauseBtn.addEventListener("click", togglePlayPause);
+    
+    document.getElementById("next-btn")?.addEventListener("click", () => {
+        if (isGuestUser()) return promptGuestLogin();
+        currentIndex = getNextIndex();
+        loadAndPlaySong(currentPlaylist, currentIndex);
+    });
+    document.getElementById("prev-btn")?.addEventListener("click", () => {
+        if (isGuestUser()) return promptGuestLogin();
+        currentIndex = (currentIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+        loadAndPlaySong(currentPlaylist, currentIndex);
+    });
+    document.getElementById("shuffle-btn")?.addEventListener("click", (e) => {
+        if (isGuestUser()) return promptGuestLogin();
+        isShuffle = !isShuffle;
+        e.target.style.color = isShuffle ? "#7494ec" : "";
+    });
+    document.getElementById("repeat-btn")?.addEventListener("click", (e) => {
+        if (isGuestUser()) return promptGuestLogin();
+        repeatMode = (repeatMode + 1) % 3;
+        e.target.style.color = repeatMode ? "#7494ec" : "";
+        e.target.className = repeatMode === 2 ? 'bx bx-redo' : 'bx bx-repeat';
+    });
+    
+    audioPlayer.addEventListener("timeupdate", updateProgress);
+    audioPlayer.addEventListener("ended", proceedToNextSong);
+    document.getElementById("main-progress-bar")?.addEventListener("click", seekAudio);
+    
+    document.getElementById("search-input-main")?.addEventListener("input", (e) => {
+        currentSearch = e.target.value.trim();
+        renderSearchDropdown(e.target.value);
+        fetchSongs(1, currentSearch, currentMood);
+    });
+
+    const toggleLibBtn = document.getElementById("toggle-library-btn");
+    if (toggleLibBtn) {
+        toggleLibBtn.title = "Thu gọn";
+        toggleLibBtn.addEventListener("mouseenter", () => {
+            showToast("Thu gọn");
+        });
+        toggleLibBtn.addEventListener("click", (e) => {
             e.preventDefault();
             document.body.classList.toggle("library-collapsed");
         });
     }
 
-    const userName = localStorage.getItem("user_displayName") || "Người dùng";
-    const userPhoto = localStorage.getItem("user_photoURL");
-    const userEmail = localStorage.getItem("user_email") || "user@musicapp.com";
-
-    const userNameEl = document.getElementById("user-name");
-    const dropdownUserNameEl = document.getElementById("dropdown-user-name");
-    const dropdownUserEmailEl = document.getElementById("dropdown-user-email");
-
-    if (userNameEl) userNameEl.innerText = userName;
-    if (dropdownUserNameEl) dropdownUserNameEl.innerText = userName;
-    if (dropdownUserEmailEl) dropdownUserEmailEl.innerText = userEmail;
-
-    checkUserPremiumStatus(userName);
-
-    const avatarBox = document.getElementById("avatar-box");
-    const profileAvatarPreview = document.getElementById("profile-avatar-preview");
-    if (avatarBox) {
-        if (userPhoto) {
-            avatarBox.innerHTML = `<img src="${userPhoto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-            if (profileAvatarPreview) profileAvatarPreview.innerHTML = `<img src="${userPhoto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-        } else {
-            avatarBox.innerText = userName.charAt(0).toUpperCase();
-            if (profileAvatarPreview) profileAvatarPreview.innerText = userName.charAt(0).toUpperCase();
+    const openCreatePlaylistModal = () => {
+        if (isGuestUser()) return promptGuestLogin();
+        const modal = document.getElementById("playlist-modal");
+        const input = document.getElementById("playlist-name-input");
+        if (modal) {
+            if (input) input.value = "";
+            modal.style.display = "flex";
+            input?.focus();
         }
-    }
-
-    // Dropdown Tài khoản cá nhân
-    const profileDropdownBtn = document.getElementById("user-profile-dropdown-btn");
-    const accountDropdownMenu = document.getElementById("account-dropdown-menu");
-    if (profileDropdownBtn && accountDropdownMenu) {
-        profileDropdownBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            accountDropdownMenu.classList.toggle("show");
-        });
-        document.addEventListener("click", () => {
-            accountDropdownMenu.classList.remove("show");
-        });
-    }
-
-    // Trang cá nhân Modal
-    const profileModal = document.getElementById("profile-modal");
-    const menuProfileBtn = document.getElementById("menu-profile-btn");
-    if (menuProfileBtn) {
-        menuProfileBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            document.getElementById("profile-name-input").value = userName;
-            document.getElementById("profile-email-input").value = userEmail;
-            document.getElementById("profile-avatar-input").value = userPhoto || "";
-            profileModal.style.display = "flex";
-        });
-    }
-    const profileCancelBtn = document.getElementById("profile-cancel-btn");
-    if (profileCancelBtn) profileCancelBtn.addEventListener("click", () => { profileModal.style.display = "none"; });
-    const profileSaveBtn = document.getElementById("profile-save-btn");
-    if (profileSaveBtn) {
-        profileSaveBtn.addEventListener("click", () => {
-            const newName = document.getElementById("profile-name-input").value.trim();
-            const newPhoto = document.getElementById("profile-avatar-input").value.trim();
-            if (newName) {
-                localStorage.setItem("user_displayName", newName);
-                localStorage.setItem("user_photoURL", newPhoto);
-                Swal.fire({ icon: 'success', title: 'Thành công!', text: 'Đã cập nhật thông tin cá nhân.', timer: 1500, showConfirmButton: false });
-                setTimeout(() => location.reload(), 1000);
-            }
-        });
-    }
-
-    // Nhạc nghe gần đây Modal
-    const historyModal = document.getElementById("history-modal");
-    const menuHistoryBtn = document.getElementById("menu-history-btn");
-    if (menuHistoryBtn) {
-        menuHistoryBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const listContainer = document.getElementById("history-song-list");
-            listContainer.innerHTML = "";
-            if (recentlyPlayed.length === 0) {
-                listContainer.innerHTML = `<p style="color: #777; text-align: center; padding: 20px;">Chưa có bài hát nào gần đây.</p>`;
-            } else {
-                recentlyPlayed.forEach((song, idx) => {
-                    const item = document.createElement("div");
-                    item.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8f9fa; border-radius: 8px; cursor: pointer;";
-                    item.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="${song.cover}" style="width: 36px; height: 36px; border-radius: 4px; object-fit: cover;">
-                            <div>
-                                <div style="font-weight: 600; font-size: 13px; color: #333;">${song.title}</div>
-                                <div style="font-size: 11px; color: #666;">${song.artist}</div>
-                            </div>
-                        </div>
-                        <i class='bx bx-play-circle' style="font-size: 24px; color: #7494ec;"></i>
-                    `;
-                    item.addEventListener("click", () => {
-                        loadAndPlaySong(recentlyPlayed, idx);
-                        historyModal.style.display = "none";
-                    });
-                    listContainer.appendChild(item);
-                });
-            }
-            historyModal.style.display = "flex";
-        });
-    }
-    const historyCloseBtn = document.getElementById("history-close-btn");
-    if (historyCloseBtn) historyCloseBtn.addEventListener("click", () => { historyModal.style.display = "none"; });
-
-    // Premium Modal
-    const premiumModal = document.getElementById("premium-modal");
-    const openPremModal = () => { premiumModal.style.display = "flex"; };
-    const menuUpgradeBtn = document.getElementById("menu-upgrade-btn");
-    if (menuUpgradeBtn) menuUpgradeBtn.addEventListener("click", (e) => { e.preventDefault(); openPremModal(); });
-    const upgradePremiumBtn = document.getElementById("upgrade-premium-btn");
-    if (upgradePremiumBtn) upgradePremiumBtn.addEventListener("click", openPremModal);
-    const sidebarUpBtn = document.getElementById("sidebar-upgrade-btn");
-    if (sidebarUpBtn) sidebarUpBtn.addEventListener("click", openPremModal);
-    const premiumCloseIcon = document.getElementById("premium-close-icon");
-    if (premiumCloseIcon) premiumCloseIcon.addEventListener("click", () => { premiumModal.style.display = "none"; });
-
-    let selectedMonths = 3;
-    document.querySelectorAll(".prem-package-card").forEach(card => {
-        card.addEventListener("click", () => {
-            document.querySelectorAll(".prem-package-card").forEach(c => {
-                c.classList.remove("selected");
-                c.style.border = "2px solid #e0e0e0";
-                c.style.background = "#fff";
-            });
-            card.classList.add("selected");
-            card.style.border = "2px solid #7494ec";
-            card.style.background = "#f0f4ff";
-            selectedMonths = parseInt(card.getAttribute("data-package"));
-        });
-    });
-
-    const confirmUpgradePaymentBtn = document.getElementById("confirm-upgrade-payment-btn");
-    if (confirmUpgradePaymentBtn) {
-        confirmUpgradePaymentBtn.addEventListener("click", async () => {
-            Swal.fire({
-                title: 'Xác nhận thanh toán DEMO?',
-                text: `Bạn đang đăng ký gói ${selectedMonths} tháng. Giao dịch này là mô phỏng.`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#7494ec',
-                confirmButtonText: 'Đồng ý nâng cấp'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await fetch(`${API_BASE_URL}/api/upgrade-premium`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username: userName })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            userIsPremium = true;
-                            localStorage.setItem("user_is_premium", "true");
-                            const expiryDate = new Date();
-                            expiryDate.setMonth(expiryDate.getMonth() + selectedMonths);
-                            localStorage.setItem("user_premium_expiry", expiryDate.toISOString());
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Thanh toán thành công!',
-                                text: `Tài khoản đã nâng cấp Premium thành công đến ${expiryDate.toLocaleDateString('vi-VN')}.`,
-                                confirmButtonColor: '#7494ec'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        }
-                    } catch (err) {
-                        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể kết nối đến server cơ sở dữ liệu!' });
-                    }
-                }
-            });
-        });
-    }
-
-    // Chuyển ngôn ngữ
-    const menuLangBtn = document.getElementById("menu-lang-btn");
-    if (menuLangBtn) {
-        menuLangBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const newLang = currentLang === 'vi' ? 'en' : 'vi';
-            changeLanguage(newLang);
-        });
-    }
-
-    // Đăng xuất
-    const menuLogoutBtn = document.getElementById("menu-logout-btn");
-    if (menuLogoutBtn) {
-        menuLogoutBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Đăng xuất?',
-                text: "Bạn có chắc chắn muốn thoát tài khoản không?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ff4757',
-                confirmButtonText: 'Đăng xuất'
-            }).then((res) => {
-                if (res.isConfirmed) {
-                    localStorage.clear();
-                    window.location.href = "SignUp_Login_Form.html";
-                }
-            });
-        });
-    }
-
-    // Tab chuyển đổi
-    let currentTab = 'explore';
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".tab-btn").forEach(b => {
-                b.style.color = "#666";
-                b.style.fontWeight = "500";
-                b.style.borderBottom = "2px solid transparent";
-            });
-            btn.style.color = "#7494ec";
-            btn.style.fontWeight = "600";
-            btn.style.borderBottom = "2px solid #7494ec";
-            currentTab = btn.getAttribute("data-tab");
-            renderTabContent(currentTab);
-        });
-    });
-
-    function renderTabContent(tab) {
-        let sortedSongs = [...musicData];
-        const titleEl = document.getElementById("main-section-title");
-        const bannerEl = document.getElementById("hero-banner-section");
-
-        if (tab === 'explore') {
-            if (bannerEl) bannerEl.style.display = "flex";
-            titleEl.innerText = translations[currentLang].section_featured;
-            renderCards(musicData);
-        } else if (tab === 'popular') {
-            if (bannerEl) bannerEl.style.display = "none";
-            sortedSongs.sort((a, b) => (b.plays || 0) - (a.plays || 0));
-            titleEl.innerText = currentLang === 'vi' ? "Bài hát Phổ biến (Lượt nghe cao)" : "Popular Songs";
-            renderCards(sortedSongs);
-        } else if (tab === 'latest') {
-            if (bannerEl) bannerEl.style.display = "none";
-            sortedSongs.sort((a, b) => new Date(b.date || '2024-01-01') - new Date(a.date || '2024-01-01'));
-            titleEl.innerText = currentLang === 'vi' ? "Bài hát Mới nhất" : "Latest Releases";
-            renderCards(sortedSongs);
-        } else if (tab === 'trending') {
-            if (bannerEl) bannerEl.style.display = "none";
-            sortedSongs.sort((a, b) => (Math.sin(a.id) - Math.sin(b.id)));
-            titleEl.innerText = currentLang === 'vi' ? "Bài hát Thịnh hành (Trending)" : "Trending Songs";
-            renderCards(sortedSongs);
-        }
-    }
-
-    // --- DROPDOWN TÌM KIẾM & NGHE THỬ NGẪU NHIÊN 1 ĐOẠN ---
-    const searchBarContainer = document.querySelector(".search-bar");
-    const mainSearch = document.getElementById("search-input-main");
-
-    if (searchBarContainer && mainSearch) {
-        let searchDropdown = document.getElementById("custom-search-dropdown");
-        if (!searchDropdown) {
-            searchDropdown = document.createElement("div");
-            searchDropdown.id = "custom-search-dropdown";
-            searchDropdown.style.cssText = "display: none; position: absolute; top: 55px; left: 0; width: 420px; background: #282828; color: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 2000; padding: 12px; max-height: 400px; overflow-y: auto;";
-            searchBarContainer.style.position = "relative";
-            searchBarContainer.appendChild(searchDropdown);
-        }
-
-        let previewAudio = new Audio();
-        let previewTimeout = null;
-
-        mainSearch.addEventListener("input", (e) => {
-            const rawVal = e.target.value.trim();
-            const query = removeVietnameseAccents(rawVal);
-            
-            if (!query) {
-                searchDropdown.style.display = "none";
-                renderCards(musicData);
-                return;
-            }
-
-            const filteredSongs = musicData.filter(s => 
-                removeVietnameseAccents(s.title).includes(query) || 
-                removeVietnameseAccents(s.artist).includes(query)
-            );
-
-            searchDropdown.style.display = "block";
-            searchDropdown.innerHTML = `
-                <div style="padding: 8px 12px; font-size: 13px; color: #aaa; cursor: pointer;" class="suggest-kw"><i class='bx bx-search'></i> ${rawVal} tùng mtp</div>
-                <div style="padding: 8px 12px; font-size: 13px; color: #aaa; cursor: pointer;" class="suggest-kw"><i class='bx bx-search'></i> ${rawVal} tung</div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.05); margin: 6px 0;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-                        <div>
-                            <div style="font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 4px;">Sơn Tùng M-TP <i class='bx bxs-check-circle' style="color: #3d91f4; font-size: 14px;"></i></div>
-                            <div style="font-size: 12px; color: #aaa;">Nghệ sĩ</div>
-                        </div>
-                    </div>
-                    <span style="font-size: 12px; font-weight: bold; border: 1px solid #aaa; padding: 4px 12px; border-radius: 20px;">Đang theo dõi</span>
-                </div>
-                <div style="font-size: 11px; font-weight: bold; color: #aaa; margin: 10px 0 6px 4px; text-transform: uppercase;">Bài hát & Danh sách phát</div>
-            `;
-
-            if (filteredSongs.length === 0) {
-                searchDropdown.innerHTML += `<div style="padding: 12px; color: #777; text-align: center;">Không tìm thấy bài hát nào.</div>`;
-            } else {
-                filteredSongs.slice(0, 5).forEach((song) => {
-                    const itemEl = document.createElement("div");
-                    itemEl.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: 0.2s;";
-                    itemEl.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="position: relative; width: 38px; height: 38px; border-radius: 6px; overflow: hidden; flex-shrink: 0;">
-                                <img src="${song.cover}" style="width: 100%; height: 100%; object-fit: cover;">
-                                <div class="hover-play-icon" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;">
-                                    <i class='bx bx-play' style="font-size: 22px; color: #fff;"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; font-size: 13.5px; color: #fff;">${song.title}</div>
-                                <div style="font-size: 11.5px; color: #aaa;">Bài hát • ${song.artist}</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <span style="font-size: 10px; color: #7494ec; background: rgba(116,148,236,0.15); padding: 2px 6px; border-radius: 4px;">Nghe thử 1 đoạn</span>
-                            <i class='bx bx-plus-circle' style="font-size: 20px; color: #aaa;" title="Thêm vào playlist"></i>
-                        </div>
-                    `;
-
-                    itemEl.addEventListener("mouseenter", () => {
-                        itemEl.style.background = "rgba(255,255,255,0.1)";
-                        itemEl.querySelector(".hover-play-icon").style.opacity = "1";
-                    });
-                    itemEl.addEventListener("mouseleave", () => {
-                        itemEl.style.background = "transparent";
-                        itemEl.querySelector(".hover-play-icon").style.opacity = "0";
-                    });
-
-                    itemEl.addEventListener("click", () => {
-                        previewAudio.src = song.src;
-                        previewAudio.currentTime = 15; 
-                        previewAudio.play().catch(err => console.log(err));
-                        
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'info',
-                            title: `Đang nghe thử: ${song.title}`,
-                            text: 'Đang phát ngẫu nhiên một đoạn.',
-                            showConfirmButton: false,
-                            timer: 3000
-                        });
-
-                        clearTimeout(previewTimeout);
-                        previewTimeout = setTimeout(() => {
-                            previewAudio.pause();
-                        }, 5000);
-                    });
-
-                    searchDropdown.appendChild(itemEl);
-                });
-            }
-
-            renderCards(filteredSongs);
-        });
-
-        document.addEventListener("click", (e) => {
-            if (!searchBarContainer.contains(e.target)) {
-                searchDropdown.style.display = "none";
-            }
-        });
-    }
-
-    // Trình phát nhạc (Player)
-    let currentPlaylist = musicData;
-    let currentIndex = 0;
-    let isShuffle = false;
-    let repeatMode = 0;
-    const audioPlayer = new Audio();
-
-    const playPauseBtn = document.getElementById("play-pause-btn");
-    const trackCover = document.querySelector(".track-cover");
-    const trackNameEl = document.querySelector(".track-name");
-    const artistNameEl = document.querySelector(".artist-name");
-    const currentTimeEl = document.querySelector(".current-time");
-    const totalDurationEl = document.querySelector(".total-duration");
-    const progressFill = document.querySelector(".progress-fill");
-    const progressBar = document.getElementById("main-progress-bar");
-    const shuffleBtn = document.getElementById("shuffle-btn");
-    const repeatBtn = document.getElementById("repeat-btn");
-
-    function formatTime(sec) {
-        if (isNaN(sec)) return "0:00";
-        const m = Math.floor(sec / 60);
-        const s = Math.floor(sec % 60);
-        return `${m}:${s < 10 ? '0' : ''}${s}`;
-    }
-
-    window.loadAndPlaySong = function(list, index) {
-        if (!userIsPremium && index >= 5) {
-            Swal.fire({
-                title: 'Giới hạn tài khoản FREE',
-                html: 'Tài khoản miễn phí chỉ được nghe tối đa 5 bài hát gợi ý đầu tiên.<br>Vui lòng nâng cấp Premium để nghe trọn vẹn kho nhạc!<br><br><a href="#" id="swal-login-link" style="color: #7494ec; font-weight: 600; text-decoration: underline;">Bạn đã có tài khoản?</a>',
-                icon: 'warning',
-                confirmButtonColor: '#7494ec',
-                confirmButtonText: 'Nâng cấp ngay',
-                didOpen: () => {
-                    const loginLink = document.getElementById('swal-login-link');
-                    if (loginLink) {
-                        loginLink.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            window.location.href = 'SignUp_Login_Form.html';
-                        });
-                    }
-                }
-            }).then((res) => {
-                if (res.isConfirmed) {
-                    document.getElementById('premium-modal').style.display = 'flex';
-                }
-            });
-            return;
-        }
-
-        if (!list || list.length === 0) return;
-        currentPlaylist = list;
-        currentIndex = index;
-        const song = currentPlaylist[currentIndex];
-
-        audioPlayer.src = song.src;
-        audioPlayer.play().then(() => {
-            if (playPauseBtn) playPauseBtn.className = 'bx bx-pause-circle play-btn';
-        }).catch(err => console.log("Autoplay blocked:", err));
-
-        if (trackNameEl) trackNameEl.innerText = song.title;
-        if (artistNameEl) artistNameEl.innerText = song.artist;
-        if (trackCover) trackCover.src = song.cover;
-
-        savePlayHistory(song);
-        updateFriendsListening(song);
     };
 
-    function updateFriendsListening(currentSong) {
-        const container = document.getElementById("friends-listening-container");
-        if (!container) return;
-        container.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #7494ec; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">JF</div>
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; color: #333;">James Foster</div>
-                        <div style="font-size: 11px; color: #777;">${currentSong.title} - <b style="color: #555;">${currentSong.artist}</b></div>
-                    </div>
-                </div>
-                <span style="font-size: 11px; color: #7494ec; font-weight: 600;">Đang nghe</span>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #ff4757; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">WR</div>
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; color: #333;">Wilson Roy</div>
-                        <div style="font-size: 11px; color: #777;">Nơi Này Có Anh - <b style="color: #555;">Sơn Tùng M-TP</b></div>
-                    </div>
-                </div>
-                <span style="font-size: 11px; color: #999;">2 phút trước</span>
-            </div>
-        `;
-    }
-    updateFriendsListening(musicData[0]);
-
-    if (shuffleBtn) {
-        shuffleBtn.addEventListener("click", () => {
-            isShuffle = !isShuffle;
-            shuffleBtn.style.color = isShuffle ? "#7494ec" : "";
-            Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: isShuffle ? 'Đã bật phát ngẫu nhiên (Shuffle)' : 'Đã tắt phát ngẫu nhiên', showConfirmButton: false, timer: 1200 });
-        });
-    }
-
-    if (repeatBtn) {
-        repeatBtn.addEventListener("click", () => {
-            repeatMode = (repeatMode + 1) % 3;
-            if (repeatMode === 0) {
-                repeatBtn.style.color = "";
-                repeatBtn.className = 'bx bx-repeat';
-                Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Tắt lặp lại', showConfirmButton: false, timer: 1000 });
-            } else if (repeatMode === 1) {
-                repeatBtn.style.color = "#7494ec";
-                repeatBtn.className = 'bx bx-repeat';
-                Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Lặp lại tất cả (Repeat All)', showConfirmButton: false, timer: 1000 });
-            } else if (repeatMode === 2) {
-                repeatBtn.style.color = "#7494ec";
-                repeatBtn.className = 'bx bx-redo';
-                Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Lặp lại bài hiện tại (Repeat One)', showConfirmButton: false, timer: 1000 });
-            }
-        });
-    }
-
-    function getNextIndex() {
-        if (isShuffle) {
-            return Math.floor(Math.random() * currentPlaylist.length);
-        } else {
-            return (currentIndex + 1) % currentPlaylist.length;
-        }
-    }
-
-    // Gắn sự kiện khi bài hát phát xong -> Kích hoạt check quảng cáo rồi mới sang bài tiếp theo
-    audioPlayer.addEventListener("ended", () => {
-        let adTriggered = checkAndPlayAdOnSongEnd();
-        
-        if (adTriggered) {
-            adAudio.onended = () => {
-                finishAdPlayback();
-                proceedToNextSong();
-            };
-        } else {
-            proceedToNextSong();
-        }
+    document.getElementById("create-playlist-trigger")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        openCreatePlaylistModal();
     });
 
-    function proceedToNextSong() {
-        if (repeatMode === 2) {
-            audioPlayer.play();
-        } else if (repeatMode === 1 || isShuffle) {
-            currentIndex = getNextIndex();
-            loadAndPlaySong(currentPlaylist, currentIndex);
-        } else {
-            if (currentIndex < currentPlaylist.length - 1) {
-                currentIndex++;
-                loadAndPlaySong(currentPlaylist, currentIndex);
-            } else {
-                if (playPauseBtn) playPauseBtn.className = 'bx bx-play-circle play-btn';
-            }
-        }
-    }
-
-    if (playPauseBtn) {
-        playPauseBtn.addEventListener("click", () => {
-            if (audioPlayer.paused) {
-                if (!audioPlayer.src && currentPlaylist.length > 0) {
-                    loadAndPlaySong(currentPlaylist, 0);
-                } else {
-                    audioPlayer.play();
-                    playPauseBtn.className = 'bx bx-pause-circle play-btn';
-                }
-            } else {
-                audioPlayer.pause();
-                playPauseBtn.className = 'bx bx-play-circle play-btn';
-            }
-        });
-    }
-
-    const nextBtn = document.getElementById("next-btn");
-    if (nextBtn) nextBtn.addEventListener("click", () => {
-        currentIndex = getNextIndex();
-        loadAndPlaySong(currentPlaylist, currentIndex);
-    });
-    const prevBtn = document.getElementById("prev-btn");
-    if (prevBtn) prevBtn.addEventListener("click", () => {
-        currentIndex = (currentIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
-        loadAndPlaySong(currentPlaylist, currentIndex);
+    document.getElementById("sidebar-plus-btn")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        openCreatePlaylistModal();
     });
 
-    audioPlayer.addEventListener("timeupdate", () => {
-        if (audioPlayer.duration) {
-            const p = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            if (progressFill) progressFill.style.width = `${p}%`;
-            if (currentTimeEl) currentTimeEl.innerText = formatTime(audioPlayer.currentTime);
-            if (totalDurationEl) totalDurationEl.innerText = formatTime(audioPlayer.duration);
-        }
+    document.getElementById("modal-cancel")?.addEventListener("click", () => {
+        document.getElementById("playlist-modal").style.display = "none";
     });
 
-    if (progressBar) {
-        progressBar.addEventListener("click", (e) => {
-            const rect = progressBar.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const width = rect.width;
-            if (audioPlayer.duration) {
-                audioPlayer.currentTime = (clickX / width) * audioPlayer.duration;
-            }
-        });
-    }
-
-    const volBar = document.getElementById("volume-bar");
-    if (volBar) {
-        volBar.addEventListener("click", (e) => {
-            const rect = volBar.getBoundingClientRect();
-            let percent = (e.clientX - rect.left) / rect.width;
-            if (percent < 0) percent = 0; if (percent > 1) percent = 1;
-            audioPlayer.volume = percent;
-            volBar.querySelector(".progress-fill").style.width = `${percent * 100}%`;
-        });
-    }
-
-    // Render Cards màn hình chính
-    function renderCards(data) {
-        const cardGrid = document.querySelector(".card-grid");
-        if (!cardGrid) return;
-        cardGrid.innerHTML = "";
-
-        if (data.length === 0) {
-            cardGrid.innerHTML = `<p style="color: #666; grid-column: 1/-1;">Không tìm thấy bài hát nào.</p>`;
-            return;
-        }
-
-        const likedPl = playlists.find(p => p.name === "Bài hát đã thích");
-
-        data.forEach((item, index) => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-            const isLiked = likedPl && likedPl.songs.includes(item.id);
-
-            card.innerHTML = `
-                <div class="card-img" style="overflow: hidden; cursor: pointer; position: relative;">
-                    <img src="${item.cover}" style="width: 100%; height: 100%; object-fit: cover;" alt="Cover">
-                    <button class="like-btn" data-songid="${item.id}" style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                        <i class='bx ${isLiked ? 'bxs-heart' : 'bx-heart'}' style="font-size: 18px; color: ${isLiked ? '#ff4757' : '#fff'};"></i>
-                    </button>
-                </div>
-                <div class="card-title">${item.title}</div>
-                <div class="card-desc">${item.artist}</div>
-            `;
-
-            card.querySelector(".card-img img").addEventListener("click", () => loadAndPlaySong(data, index));
-            card.querySelector(".card-title").addEventListener("click", () => loadAndPlaySong(data, index));
-
-            card.querySelector(".like-btn").addEventListener("click", (e) => {
-                e.stopPropagation();
-                let liked = playlists.find(p => p.name === "Bài hát đã thích");
-                if (!liked) { liked = { name: "Bài hát đã thích", songs: [] }; playlists.push(liked); }
-                const idx = liked.songs.indexOf(item.id);
-                if (idx > -1) {
-                    liked.songs.splice(idx, 1);
-                } else {
-                    liked.songs.push(item.id);
-                }
-                localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
-                syncPlaylistsToDatabase();
-                renderCards(data);
-            });
-
-            cardGrid.appendChild(card);
-        });
-    }
-
-    renderCards(musicData);
-
-    // Sidebar Playlists & Tính năng xử lý Playlist
-    window.renderSidebarPlaylists = function() {
-        const playlistLinks = document.querySelector(".playlist-links");
-        if (!playlistLinks) return;
-
-        playlistLinks.innerHTML = `
-            <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> <span class="nav-text" data-i18n="nav_create_playlist">Tạo playlist</span></a></li>
-            <li><a href="#" id="liked-songs-link"><i class='bx bxs-heart-square'></i> <span class="nav-text" data-i18n="nav_liked_songs">Bài hát đã thích</span></a></li>
-            <hr style="border:0; border-top:1px solid #eee; margin: 8px 0;">
-        `;
-
-        const likedSongsLink = document.getElementById("liked-songs-link");
-        if (likedSongsLink) {
-            likedSongsLink.addEventListener("click", (e) => {
-                e.preventDefault();
-                const likedPl = playlists.find(p => p.name === "Bài hát đã thích");
-                const likedSongIds = likedPl ? likedPl.songs : [];
-                const likedSongs = musicData.filter(s => likedSongIds.includes(s.id));
-                
-                const mainTitle = document.getElementById("main-section-title");
-                if (mainTitle) mainTitle.innerText = "Bài hát đã thích";
-                
-                const bannerEl = document.getElementById("hero-banner-section");
-                if (bannerEl) bannerEl.style.display = "none";
-
-                renderCards(likedSongs);
-            });
-        }
-
-        playlists.forEach(pl => {
-            if (pl.name !== "Bài hát đã thích") {
-                const plName = pl.name;
-                const plId = pl.id || (pl.id = 'pl_' + Math.random().toString(36).substring(2, 9));
-                
-                globalPublicPlaylists[plId] = pl;
-                localStorage.setItem('music_app_global_public_playlists', JSON.stringify(globalPublicPlaylists));
-
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 4px 0;">
-                        <a href="#" class="custom-pl-link" style="display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; color: inherit;">
-                            <i class='bx bx-music'></i> <span class="nav-text">${plName}</span>
-                        </a>
-                        <div style="display: flex; gap: 4px; align-items: center;" class="nav-text">
-                            <button onclick="openAddSongModal('${plName}')" title="Thêm bài hát nhanh" style="background: none; border: none; color: #7494ec; cursor: pointer; font-size: 14px;"><i class='bx bx-plus-circle'></i></button>
-                            <button onclick="sharePlaylist('${plId}')" title="Chia sẻ playlist" style="background: none; border: none; color: #7494ec; cursor: pointer; font-size: 14px;"><i class='bx bx-paper-plane'></i></button>
-                            <button onclick="deletePlaylist('${plName}')" title="Xóa playlist" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 14px;"><i class='bx bx-trash'></i></button>
-                        </div>
-                    </div>
-                `;
-                li.querySelector(".custom-pl-link").addEventListener("click", (e) => {
-                    e.preventDefault();
-                    renderPlaylistView(plName);
-                });
-                playlistLinks.appendChild(li);
-            }
-        });
-
-        const sharedContainer = document.getElementById("shared-playlist-container");
-        const sharedLinksContainer = document.querySelector(".shared-playlist-links");
-        if (sharedContainer && sharedLinksContainer && sharedPlaylists.length > 0) {
-            sharedContainer.style.display = "block";
-            sharedLinksContainer.innerHTML = "";
-            sharedPlaylists.forEach(spl => {
-                const sli = document.createElement("li");
-                sli.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 4px 0;">
-                        <a href="#" class="shared-pl-link" style="display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; color: inherit;">
-                            <i class='bx bx-share-alt' style="color: #7494ec;"></i> <span class="nav-text">${spl.name}</span>
-                        </a>
-                        <button onclick="removeSharedPlaylist('${spl.id}')" title="Xóa playlist chia sẻ" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 13px;" class="nav-text"><i class='bx bx-x'></i></button>
-                    </div>
-                `;
-                sli.querySelector(".shared-pl-link").addEventListener("click", (e) => {
-                    e.preventDefault();
-                    renderPlaylistView(spl.name, true);
-                });
-                sharedLinksContainer.appendChild(sli);
-            });
-        } else if (sharedContainer) {
-            sharedContainer.style.display = "none";
-        }
-
-        localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
-        localStorage.setItem(sharedPlaylistsKey, JSON.stringify(sharedPlaylists));
-        syncPlaylistsToDatabase();
-    };
-
-    window.renderPlaylistView = function(plName, isShared = false) {
-        const pl = isShared ? sharedPlaylists.find(p => p.name === plName) : playlists.find(p => p.name === plName);
-        if (!pl) return;
-
-        const plSongs = musicData.filter(s => pl.songs.includes(s.id));
-        const mainTitle = document.getElementById("main-section-title");
-        const bannerEl = document.getElementById("hero-banner-section");
-        if (bannerEl) bannerEl.style.display = "none";
-
-        let htmlHeader = `
-            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
-                <h2 style="font-size: 22px; font-weight: bold; color: #222; margin: 0;">Playlist: ${plName}</h2>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <button onclick="openAddSongModal('${plName}')" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: #7494ec; color: #fff; border: none; border-radius: 20px; font-weight: 600; font-size: 13px; cursor: pointer; box-shadow: 0 4px 10px rgba(116,148,236,0.3);">
-                        <i class='bx bx-plus' style="font-size: 16px;"></i> Thêm bài hát
-                    </button>
-        `;
-
-        if (plSongs.length > 0) {
-            const jsonSongs = encodeURIComponent(JSON.stringify(plSongs));
-            htmlHeader += `
-                    <button onclick="loadAndPlaySong(JSON.parse(decodeURIComponent('${jsonSongs}')), 0)" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: #2ed573; color: #fff; border: none; border-radius: 20px; font-weight: 600; font-size: 13px; cursor: pointer; box-shadow: 0 4px 10px rgba(46,213,115,0.3);">
-                        <i class='bx bx-play' style="font-size: 16px;"></i> Phát ngay
-                    </button>
-            `;
-        }
-
-        htmlHeader += `
-                </div>
-            </div>
-        `;
-
-        mainTitle.innerHTML = htmlHeader;
-        renderCards(plSongs);
-    };
-
-    window.sharePlaylist = function(plId) {
-        const shareUrl = `${window.location.origin}${window.location.pathname}?shared_playlist_id=${plId}`;
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            Swal.fire({ icon: 'success', title: 'Đã sao chép liên kết!', text: 'Đường dẫn chia sẻ playlist đã được sao chép.', timer: 2000, showConfirmButton: false });
-        });
-    };
-
-    window.removeSharedPlaylist = function(splId) {
-        Swal.fire({
-            title: 'Xóa playlist chia sẻ này?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ff4757',
-            confirmButtonText: 'Xóa'
-        }).then(res => {
-            if (res.isConfirmed) {
-                sharedPlaylists = sharedPlaylists.filter(p => p.id !== splId);
-                localStorage.setItem(sharedPlaylistsKey, JSON.stringify(sharedPlaylists));
-                renderSidebarPlaylists();
-                document.getElementById("main-section-title").innerText = translations[currentLang].section_featured;
-                renderCards(musicData);
-            }
-        });
-    };
-
-    window.deletePlaylist = function(plName) {
-        Swal.fire({
-            title: `Xóa playlist "${plName}"?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ff4757',
-            confirmButtonText: 'Đồng ý xóa'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const user = localStorage.getItem("user_displayName") || "GuestUser";
-                fetch(`${API_BASE_URL}/api/playlists/delete`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, name: plName })
-                }).catch(err => console.log(err));
-
-                playlists = playlists.filter(p => p.name !== plName);
-                renderSidebarPlaylists();
-                document.getElementById("main-section-title").innerText = translations[currentLang].section_featured;
-                renderCards(musicData);
-                Swal.fire({ icon: 'success', title: 'Đã xóa thành công!', timer: 1200, showConfirmButton: false });
-            }
-        });
-    };
-
-    const plModal = document.getElementById("playlist-modal");
-    document.addEventListener("click", (e) => {
-        if (e.target.id === "create-playlist-trigger" || e.target.id === "sidebar-plus-btn") {
-            e.preventDefault();
-            document.getElementById("playlist-name-input").value = "";
-            if (plModal) plModal.style.display = "flex";
-        }
-    });
-    const modalCancel = document.getElementById("modal-cancel");
-    if (modalCancel) modalCancel.addEventListener("click", () => { plModal.style.display = "none"; });
-    const modalConfirm = document.getElementById("modal-confirm");
-    if (modalConfirm) {
-        modalConfirm.addEventListener("click", () => {
-            const name = document.getElementById("playlist-name-input").value.trim();
-            if (!name) { Swal.fire({ icon: 'warning', title: 'Vui lòng nhập tên playlist!' }); return; }
-            playlists.push({ id: 'pl_' + Math.random().toString(36).substring(2, 9), name: name, songs: [] });
-            if (plModal) plModal.style.display = "none";
-            renderSidebarPlaylists();
-            Swal.fire({ icon: 'success', title: 'Tạo playlist thành công!', timer: 1200, showConfirmButton: false });
-        });
-    }
-
-    // Modal Thêm Bài Hát Nhanh
-    window.openAddSongModal = function(plName) {
-        const pl = playlists.find(p => p.name === plName);
-        if (!pl) return;
-        const addModal = document.getElementById("add-song-modal");
-        document.getElementById("add-song-modal-title").innerText = `Thêm bài hát vào: ${plName}`;
-        
-        const searchInputEl = document.getElementById("quick-search-song-input");
-        searchInputEl.value = "";
-
-        const renderSongListForModal = (filterText = "") => {
-            const listContainer = document.getElementById("modal-song-list");
-            listContainer.innerHTML = "";
-
-            const filtered = musicData.filter(song => 
-                removeVietnameseAccents(song.title).includes(filterText) || 
-                removeVietnameseAccents(song.artist).includes(filterText)
-            );
-
-            if (filtered.length === 0) {
-                listContainer.innerHTML = `<p style="color: #777; text-align: center; padding: 15px;">Không tìm thấy bài hát phù hợp.</p>`;
-                return;
-            }
-
-            filtered.forEach(song => {
-                const inPl = pl.songs.includes(song.id);
-                const item = document.createElement("div");
-                item.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8f9fa; border-radius: 8px;";
-                item.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="${song.cover}" style="width: 38px; height: 38px; border-radius: 6px; object-fit: cover;">
-                        <div>
-                            <div style="font-weight: 600; font-size: 13.5px; color: #333;">${song.title}</div>
-                            <div style="font-size: 11.5px; color: #666;">${song.artist}</div>
-                        </div>
-                    </div>
-                    <button class="action-pl-song-btn" style="padding: 5px 12px; background: ${inPl ? '#ff4757' : '#7494ec'}; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">${inPl ? 'Đã thêm ✓' : '+ Thêm'}</button>
-                `;
-                item.querySelector("button").addEventListener("click", () => {
-                    if (!inPl) {
-                        pl.songs.push(song.id);
-                        localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
-                        syncPlaylistsToDatabase();
-                        renderSongListForModal(removeVietnameseAccents(searchInputEl.value.trim()));
-                        renderPlaylistView(plName);
-                        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: `Đã thêm "${song.title}"`, showConfirmButton: false, timer: 1000 });
-                    }
-                });
-                listContainer.appendChild(item);
-            });
+    document.getElementById("modal-confirm")?.addEventListener("click", () => {
+        if (isGuestUser()) return promptGuestLogin();
+        const input = document.getElementById("playlist-name-input");
+        const name = input ? input.value.trim() : "";
+        if (!name) return;
+        const newPl = {
+            id: "pl_" + Date.now(),
+            name: name,
+            songs: []
         };
+        playlists.push(newPl);
+        localStorage.setItem("music_app_playlists", JSON.stringify(playlists));
+        document.getElementById("playlist-modal").style.display = "none";
+        renderSidebarPlaylists();
+    });
 
-        searchInputEl.oninput = (e) => {
-            renderSongListForModal(removeVietnameseAccents(e.target.value.trim()));
-        };
+    document.getElementById("mood-playlist-trigger")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (isGuestUser()) return promptGuestLogin();
+        document.getElementById("mood-step-1").style.display = "block";
+        document.getElementById("mood-step-2").style.display = "none";
+        document.getElementById("mood-playlist-modal").style.display = "flex";
+    });
 
-        renderSongListForModal("");
-        if (addModal) addModal.style.display = "flex";
-    };
+    document.getElementById("mood-modal-close")?.addEventListener("click", () => {
+        document.getElementById("mood-playlist-modal").style.display = "none";
+    });
 
-    const addModalClose = document.getElementById("add-modal-close");
-    if (addModalClose) {
-        addModalClose.addEventListener("click", () => { 
-            document.getElementById("add-song-modal").style.display = "none"; 
-        });
-    }
-
-    // Tạo Playlist theo tâm trạng
-    const moodModal = document.getElementById("mood-playlist-modal");
-    const moodTrigger = document.getElementById("mood-playlist-trigger");
-    if (moodTrigger) {
-        moodTrigger.addEventListener("click", () => {
-            document.getElementById("mood-step-1").style.display = "block";
-            document.getElementById("mood-step-2").style.display = "none";
-            if (moodModal) moodModal.style.display = "flex";
-        });
-    }
-    const moodClose = document.getElementById("mood-modal-close");
-    if (moodClose) moodClose.addEventListener("click", () => { moodModal.style.display = "none"; });
-
-    document.querySelectorAll(".mood-option-btn").forEach(btn => {
+    document.querySelectorAll(".mood-option-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-            const mood = btn.getAttribute("data-mood");
-            const selectedMoodSongs = musicData.slice(0, 15);
-
-            const sugContainer = document.getElementById("mood-songs-suggestion-list");
-            sugContainer.innerHTML = "";
-            selectedMoodSongs.forEach(song => {
-                const sItem = document.createElement("div");
-                sItem.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8f9fa; border-radius: 8px;";
-                sItem.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="checkbox" class="mood-song-checkbox" value="${song.id}" checked style="width: 16px; height: 16px; accent-color: #7494ec;">
-                        <img src="${song.cover}" style="width: 36px; height: 36px; border-radius: 4px; object-fit: cover;">
-                        <div>
-                            <div style="font-weight: 600; font-size: 13px; color: #333;">${song.title}</div>
-                            <div style="font-size: 11px; color: #666;">${song.artist}</div>
-                        </div>
-                    </div>
-                `;
-                sugContainer.appendChild(sItem);
-            });
-
-            document.getElementById("mood-playlist-name-input").value = `Playlist Tâm trạng (${mood.toUpperCase()})`;
+            selectedMoodValue = btn.getAttribute("data-mood") || "chill";
+            const suggested = musicDataSync.slice(0, 8);
+            const listEl = document.getElementById("mood-songs-suggestion-list");
+            const nameInput = document.getElementById("mood-playlist-name-input");
+            if (nameInput) nameInput.value = `Playlist ${selectedMoodValue}`;
+            if (listEl) {
+                listEl.innerHTML = suggested.map((s) => `
+                    <label style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border:1px solid #eee; border-radius:8px; cursor:pointer; font-size:13px;">
+                        <span style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" class="mood-song-checkbox" value="${s.id}" checked>
+                            <b>${s.title}</b> - ${s.artist}
+                        </span>
+                    </label>
+                `).join("");
+            }
             document.getElementById("mood-step-1").style.display = "none";
             document.getElementById("mood-step-2").style.display = "flex";
         });
     });
 
-    const moodBackBtn = document.getElementById("mood-back-btn");
-    if (moodBackBtn) {
-        moodBackBtn.addEventListener("click", () => {
-            document.getElementById("mood-step-2").style.display = "none";
-            document.getElementById("mood-step-1").style.display = "block";
-        });
-    }
+    document.getElementById("mood-back-btn")?.addEventListener("click", () => {
+        document.getElementById("mood-step-2").style.display = "none";
+        document.getElementById("mood-step-1").style.display = "block";
+    });
 
-    const moodSaveBtn = document.getElementById("mood-save-playlist-btn");
-    if (moodSaveBtn) {
-        moodSaveBtn.addEventListener("click", () => {
-            const plName = document.getElementById("mood-playlist-name-input").value.trim() || "Playlist Tâm trạng";
-            const checkboxes = document.querySelectorAll(".mood-song-checkbox:checked");
-            const songIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    document.getElementById("mood-save-playlist-btn")?.addEventListener("click", () => {
+        if (isGuestUser()) return promptGuestLogin();
+        const nameInput = document.getElementById("mood-playlist-name-input");
+        const plName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : `Playlist ${selectedMoodValue}`;
+        const checkedIds = Array.from(document.querySelectorAll(".mood-song-checkbox:checked")).map(cb => Number(cb.value));
+        const newPl = {
+            id: "pl_mood_" + Date.now(),
+            name: plName,
+            songs: checkedIds
+        };
+        playlists.push(newPl);
+        localStorage.setItem("music_app_playlists", JSON.stringify(playlists));
+        document.getElementById("mood-playlist-modal").style.display = "none";
+        renderSidebarPlaylists();
+    });
 
-            if (songIds.length === 0) {
-                Swal.fire({ icon: 'warning', title: 'Vui lòng chọn ít nhất một bài hát!' });
-                return;
-            }
+    document.getElementById("playlist-add-song-btn")?.addEventListener("click", () => {
+        if (isGuestUser()) return promptGuestLogin();
+        if (!activePlaylistId || activePlaylistId === 'pl_liked') return;
+        const searchInput = document.getElementById("quick-search-song-input");
+        if (searchInput) searchInput.value = "";
+        renderQuickAddSongList("");
+        document.getElementById("add-song-modal").style.display = "flex";
+    });
 
-            playlists.push({
-                id: 'pl_' + Math.random().toString(36).substring(2, 9),
-                name: plName,
-                songs: songIds
-            });
-            localStorage.setItem('music_app_playlists', JSON.stringify(playlists));
-            moodModal.style.display = "none";
-            renderSidebarPlaylists();
-            Swal.fire({ icon: 'success', title: 'Đã lưu playlist vào thư viện!', timer: 1500, showConfirmButton: false });
-        });
-    }
+    document.getElementById("add-modal-close")?.addEventListener("click", () => {
+        document.getElementById("add-song-modal").style.display = "none";
+    });
+
+    document.getElementById("quick-search-song-input")?.addEventListener("input", (e) => {
+        renderQuickAddSongList(e.target.value.trim());
+    });
 
     renderSidebarPlaylists();
+}
+
+function showToast(msg) {
+    let toast = document.getElementById("library-hover-toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "library-hover-toast";
+        toast.style = "position: fixed; bottom: 105px; left: 24px; background: #222; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; z-index: 2000; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2);";
+        document.body.appendChild(toast);
+    }
+    toast.innerText = msg;
+    toast.style.opacity = "1";
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => {
+        toast.style.opacity = "0";
+    }, 1200);
+}
+
+function renderQuickAddSongList(keyword) {
+    const listContainer = document.getElementById("modal-song-list");
+    if (!listContainer) return;
+    const kw = keyword.toLowerCase();
+    const filtered = musicDataSync.filter(s =>
+        !kw || s.title.toLowerCase().includes(kw) || s.artist.toLowerCase().includes(kw)
+    );
+
+    const pl = playlists.find(p => p.id === activePlaylistId);
+    listContainer.innerHTML = filtered.map(song => {
+        const alreadyIn = pl && pl.songs.includes(song.id);
+        return `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border:1px solid #eee; border-radius:8px;">
+                <div style="min-width:0; margin-right:8px;">
+                    <div style="font-size:13.5px; font-weight:600; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${song.title}</div>
+                    <div style="font-size:12px; color:#777;">${song.artist}</div>
+                </div>
+                <button class="quick-add-item-btn" data-songid="${song.id}" style="padding:5px 10px; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; background:${alreadyIn ? '#e0e0e0' : '#7494ec'}; color:${alreadyIn ? '#555' : '#fff'}; flex-shrink:0;">
+                    ${alreadyIn ? 'Đã có' : 'Thêm'}
+                </button>
+            </div>
+        `;
+    }).join("");
+
+    listContainer.querySelectorAll(".quick-add-item-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            if (isGuestUser()) return promptGuestLogin();
+            const songId = Number(btn.getAttribute("data-songid"));
+            const targetPl = playlists.find(p => p.id === activePlaylistId);
+            if (!targetPl) return;
+            if (!targetPl.songs.includes(songId)) {
+                targetPl.songs.push(songId);
+                localStorage.setItem("music_app_playlists", JSON.stringify(playlists));
+                const plSongs = musicDataSync.filter(s => targetPl.songs.includes(s.id));
+                renderCards(plSongs);
+                renderQuickAddSongList(keyword);
+            }
+        });
+    });
+}
+
+function sharePlaylistItem(plObj) {
+    if (isGuestUser()) return promptGuestLogin();
+    const payload = encodeURIComponent(JSON.stringify({ name: plObj.name, songs: plObj.songs || [] }));
+    const baseUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareUrl = `${baseUrl}?share=${payload}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).catch(() => {});
+    }
+    Swal.fire({
+        title: "Chia sẻ với bạn bè",
+        html: `<p style="font-size:13px; margin-bottom:8px;">Link chia sẻ playlist <b>${plObj.name}</b>:</p><input type="text" readonly value="${shareUrl}" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;">`,
+        icon: "success",
+        confirmButtonText: "Đóng",
+        confirmButtonColor: "#7494ec"
+    });
+}
+
+function handleLikedSongsClick(e) {
+    e.preventDefault();
+    if (isGuestUser()) return promptGuestLogin();
+    const likedPl = playlists.find(p => p.name === "Bài hát đã thích");
+    const likedIds = likedPl ? likedPl.songs : [];
+    const perPage = 20;
+    const totalLikedPages = Math.ceil(likedIds.length / perPage);
+
+    if (totalLikedPages === 0) {
+        Swal.fire({
+            title: "Thông báo",
+            text: "Chưa có bài hát yêu thích",
+            icon: "info",
+            confirmButtonText: "Đóng",
+            confirmButtonColor: "#7494ec"
+        });
+        return;
+    }
+
+    activePlaylistId = "pl_liked";
+    document.getElementById("playlist-view-toolbar").style.display = "none";
+    document.getElementById("main-section-title").innerText = "Bài hát đã thích";
+    document.getElementById("hero-banner-section").style.display = "none";
+
+    const likedSongs = musicDataSync.filter(s => likedIds.includes(s.id));
+    renderCards(likedSongs.slice(0, perPage));
+    renderPagination(totalLikedPages, 1);
+}
+
+function formatTime(sec) {
+    if (isNaN(sec)) return "0:00";
+    const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+window.loadAndPlaySong = function(list, index) {
+    if (!list || list.length === 0) return;
+    currentPlaylist = list;
+    currentIndex = index;
+    const song = currentPlaylist[currentIndex];
+
+    audioPlayer.src = song.src;
+    audioPlayer.play().catch(err => console.log(err));
+    document.getElementById("play-pause-btn").className = 'bx bx-pause-circle play-btn';
+    
+    document.querySelector(".track-name").innerText = song.title;
+    document.querySelector(".artist-name").innerText = song.artist;
+    document.querySelector(".track-cover").src = song.cover;
+
+    if (!isGuestUser()) {
+        fetch('http://localhost:3000/api/history/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: currentUsername, song: song })
+        }).catch(e => console.log(e));
+    }
+};
+
+function togglePlayPause() {
+    const btn = document.getElementById("play-pause-btn");
+    if (audioPlayer.paused) {
+        audioPlayer.play();
+        btn.className = 'bx bx-pause-circle play-btn';
+    } else {
+        audioPlayer.pause();
+        btn.className = 'bx bx-play-circle play-btn';
+    }
+}
+
+function getNextIndex() {
+    return isShuffle ? Math.floor(Math.random() * currentPlaylist.length) : (currentIndex + 1) % currentPlaylist.length;
+}
+
+function proceedToNextSong() {
+    if (repeatMode === 2) { audioPlayer.currentTime = 0; audioPlayer.play(); }
+    else if (repeatMode === 1 || isShuffle) { currentIndex = getNextIndex(); loadAndPlaySong(currentPlaylist, currentIndex); }
+    else if (currentIndex < currentPlaylist.length - 1) { currentIndex++; loadAndPlaySong(currentPlaylist, currentIndex); }
+    else { document.getElementById("play-pause-btn").className = 'bx bx-play-circle play-btn'; }
+}
+
+function updateProgress() {
+    if (audioPlayer.duration) {
+        const p = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        document.querySelector(".progress-fill").style.width = `${p}%`;
+        document.querySelector(".current-time").innerText = formatTime(audioPlayer.currentTime);
+        document.querySelector(".total-duration").innerText = formatTime(audioPlayer.duration);
+    }
+}
+
+function seekAudio(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    if (audioPlayer.duration) audioPlayer.currentTime = pct * audioPlayer.duration;
+}
+
+async function checkUserPremiumStatus(username) {
+    try {
+        const response = await fetch(`http://localhost:3000/api/user-status/${username}`);
+        const data = await response.json();
+        if (data.success) {
+            userIsPremium = data.is_premium;
+            const badgeEl = document.getElementById("account-badge");
+            if (userIsPremium) {
+                badgeEl.innerText = "PREMIUM ⭐"; badgeEl.style.color = "#2ed573"; badgeEl.style.background = "#e8f8f0";
+            } else {
+                badgeEl.innerText = "FREE"; badgeEl.style.color = "#ff4757"; badgeEl.style.background = "#ffebee";
+            }
+        }
+    } catch (err) { console.log(err); }
+}
+
+window.renderSidebarPlaylists = function() {
+    const playlistLinks = document.querySelector(".playlist-links");
+    if (!playlistLinks) return;
+
+    const likedPl = playlists.find(p => p.name === "Bài hát đã thích") || { id: "pl_liked", name: "Bài hát đã thích", songs: [] };
+    const customPlaylists = playlists.filter(p => p.name !== "Bài hát đã thích");
+
+    let html = `
+        <li><a href="#" id="create-playlist-trigger"><i class='bx bxs-plus-square'></i> <span class="nav-text">Tạo playlist</span></a></li>
+        <li class="sidebar-pl-item">
+            <a href="#" id="liked-songs-link" class="sidebar-pl-link"><i class='bx bxs-heart-square'></i> <span class="nav-text">Bài hát đã thích</span></a>
+            <div class="sidebar-pl-actions">
+                <button type="button" class="sidebar-icon-action share-pl-btn" data-plid="${likedPl.id}" title="Chia sẻ với bạn bè"><i class='bx bx-share-alt'></i></button>
+            </div>
+        </li>
+        <hr style="border:0; border-top:1px solid #eee; margin: 8px 0;">
+    `;
+
+    customPlaylists.forEach(pl => {
+        html += `
+            <li class="sidebar-pl-item">
+                <a href="#" class="sidebar-pl-link custom-pl-open-link" data-plid="${pl.id}"><i class='bx bxs-playlist'></i> <span class="nav-text">${pl.name}</span></a>
+                <div class="sidebar-pl-actions">
+                    <button type="button" class="sidebar-icon-action share-pl-btn" data-plid="${pl.id}" title="Chia sẻ với bạn bè"><i class='bx bx-share-alt'></i></button>
+                    <button type="button" class="sidebar-icon-action delete-pl-btn" data-plid="${pl.id}" title="Xóa playlist"><i class='bx bx-trash'></i></button>
+                </div>
+            </li>
+        `;
+    });
+
+    playlistLinks.innerHTML = html;
+
+    document.getElementById("create-playlist-trigger")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (isGuestUser()) return promptGuestLogin();
+        const modal = document.getElementById("playlist-modal");
+        const input = document.getElementById("playlist-name-input");
+        if (modal) {
+            if (input) input.value = "";
+            modal.style.display = "flex";
+            input?.focus();
+        }
+    });
+
+    document.getElementById("liked-songs-link")?.addEventListener("click", handleLikedSongsClick);
+
+    playlistLinks.querySelectorAll(".custom-pl-open-link").forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (isGuestUser()) return promptGuestLogin();
+            const plId = link.getAttribute("data-plid");
+            const pl = playlists.find(p => p.id === plId);
+            if (!pl) return;
+            activePlaylistId = pl.id;
+            document.getElementById("main-section-title").innerText = pl.name;
+            document.getElementById("hero-banner-section").style.display = "none";
+            document.getElementById("playlist-view-toolbar").style.display = "flex";
+            const plSongs = musicDataSync.filter(s => pl.songs.includes(s.id));
+            renderCards(plSongs);
+            renderPagination(1, 1);
+        });
+    });
+
+    playlistLinks.querySelectorAll(".share-pl-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const plId = btn.getAttribute("data-plid");
+            const plObj = plId === likedPl.id ? likedPl : playlists.find(p => p.id === plId);
+            if (plObj) sharePlaylistItem(plObj);
+        });
+    });
+
+    playlistLinks.querySelectorAll(".delete-pl-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (isGuestUser()) return promptGuestLogin();
+            const plId = btn.getAttribute("data-plid");
+            playlists = playlists.filter(p => p.id !== plId);
+            localStorage.setItem("music_app_playlists", JSON.stringify(playlists));
+            if (activePlaylistId === plId) {
+                activePlaylistId = null;
+                document.getElementById("playlist-view-toolbar").style.display = "none";
+                document.getElementById("main-section-title").innerText = "Bài hát nổi bật";
+                document.getElementById("hero-banner-section").style.display = "flex";
+                fetchSongs(currentPage, currentSearch, currentMood);
+            }
+            renderSidebarPlaylists();
+        });
+    });
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("user-profile-dropdown-btn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.getElementById("account-dropdown-menu").style.display = "block";
+    });
+    document.addEventListener("click", () => {
+        document.getElementById("account-dropdown-menu").style.display = "none";
+    });
+
+    document.getElementById("menu-logout-btn")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        Swal.fire({ title: 'Đăng xuất?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Đăng xuất' })
+            .then(res => { if (res.isConfirmed) { localStorage.clear(); window.location.href = "SignUp_Login_Form.html"; } });
+    });
 });

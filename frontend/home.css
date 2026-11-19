@@ -57,6 +57,10 @@ body.library-collapsed .shared-playlist-links li a i {
     font-size: 24px;
 }
 
+body.library-collapsed .sidebar-pl-actions {
+    display: none !important;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -344,4 +348,53 @@ body.library-collapsed .shared-playlist-links li a i {
     border-color: #7494ec !important;
     background: #f0f4ff !important;
     color: #7494ec;
+}
+
+.sidebar-pl-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.sidebar-pl-link {
+    flex: 1;
+    min-width: 0;
+}
+
+.sidebar-pl-link .nav-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-pl-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.sidebar-icon-action {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.sidebar-icon-action:hover {
+    background: #f0f4ff;
+    color: #7494ec;
+}
+
+.sidebar-icon-action.delete-pl-btn:hover {
+    background: #ffebee;
+    color: #ff4757;
 }
